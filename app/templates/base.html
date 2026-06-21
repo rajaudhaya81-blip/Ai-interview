@@ -10,6 +10,8 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
     <!-- Custom Style Sheet -->
     <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+    <!-- AOS CSS -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     {% block head %}{% endblock %}
@@ -60,19 +62,43 @@
 
     <!-- Main Container -->
     <div class="container py-4">
-        <!-- Flash Messages -->
+        <!-- Flash Messages via SweetAlert2 Toasts -->
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
-                <div class="row justify-content-center mb-4">
-                    <div class="col-md-8">
+                <!-- SweetAlert2 JS (Temporary local import for sync if needed, but imported in footer) -->
+                <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+                <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        const Toast = Swal.mixin({
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 4000,
+                            timerProgressBar: true,
+                            background: '#1a1c23',
+                            color: '#fff',
+                            iconColor: '#66fcf1',
+                            didOpen: (toast) => {
+                                toast.addEventListener('mouseenter', Swal.stopTimer)
+                                toast.addEventListener('mouseleave', Swal.resumeTimer)
+                            }
+                        });
                         {% for category, message in messages %}
-                            <div class="alert alert-{{ category if category != 'error' else 'danger' }} alert-dismissible fade show bg-dark border-{{ category }} text-white" role="alert">
-                                {{ message }}
-                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
-                            </div>
+                            {% set swal_icon = 'info' %}
+                            {% if category == 'success' %}
+                                {% set swal_icon = 'success' %}
+                            {% elif category == 'error' or category == 'danger' %}
+                                {% set swal_icon = 'error' %}
+                            {% elif category == 'warning' %}
+                                {% set swal_icon = 'warning' %}
+                            {% endif %}
+                            Toast.fire({
+                                icon: '{{ swal_icon }}',
+                                title: '{{ message|safe }}'
+                            });
                         {% endfor %}
-                    </div>
-                </div>
+                    });
+                </script>
             {% endif %}
         {% endwith %}
 
@@ -81,6 +107,27 @@
 
     <!-- Bootstrap Bundle JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- AOS JS -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <!-- SweetAlert2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- VanillaTilt JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.1/vanilla-tilt.min.js"></script>
+    <!-- Typed.js -->
+    <script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12"></script>
+    <!-- Particles.js -->
+    <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+    
+    <script>
+        // Initialize AOS
+        document.addEventListener('DOMContentLoaded', function() {
+            AOS.init({
+                duration: 800,
+                easing: 'ease-in-out',
+                once: true
+            });
+        });
+    </script>
     {% block scripts %}{% endblock %}
 </body>
 </html>

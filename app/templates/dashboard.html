@@ -10,7 +10,7 @@
         <p class="text-low">Ready to level up your career readiness today?</p>
     </div>
     <div class="col-lg-4 text-lg-end">
-        <div class="d-inline-flex align-items-center gap-3 glass-card py-2 px-3">
+        <div class="d-inline-flex align-items-center gap-3 glass-card py-2 px-3" data-tilt data-tilt-max="10">
             <div class="text-end">
                 <div class="small text-low">Current Streak</div>
                 <div class="fw-bold text-warning"><i class="bi bi-fire"></i> {{ streak_count }} Day{{ 's' if streak_count != 1 }}</div>
@@ -45,7 +45,7 @@
     <div class="col-lg-8 mb-4">
         {% if not has_resume %}
             <!-- Onboarding Card -->
-            <div class="glass-card mb-4">
+            <div class="glass-card mb-4" data-tilt data-tilt-max="5" data-tilt-glare="true" data-tilt-max-glare="0.1">
                 <h4 class="mb-3" style="font-family: 'Outfit', sans-serif;">Complete Your Onboarding</h4>
                 <p class="text-low">Upload your resume to allow our AI to generate personalized technical and situational interview questions.</p>
                 
@@ -75,7 +75,7 @@
             </div>
         {% else %}
             <!-- Standard Dashboard Stats & Core CTA -->
-            <div class="glass-card mb-4">
+            <div class="glass-card mb-4" data-tilt data-tilt-max="4" data-tilt-glare="true" data-tilt-max-glare="0.08">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h4 class="mb-0" style="font-family: 'Outfit', sans-serif;">AI Mock Interview Simulator</h4>
                     <span class="badge bg-dark text-info border border-info px-2.5 py-1.5">Resume Verified</span>
@@ -84,13 +84,35 @@
                 
                 <div class="row g-3 mb-4">
                     <div class="col-sm-6">
-                        <div class="p-3 bg-dark-50 rounded-3 border border-color h-100">
-                            <div class="small text-low">ATS Score</div>
-                            <div class="d-flex align-items-center gap-2 mt-1">
-                                <div class="progress flex-grow-1" style="height: 8px;">
-                                    <div class="progress-bar bg-info" style="width: {{ resume.ats_score }}%;"></div>
-                                </div>
-                                <span class="fw-bold text-white small">{{ resume.ats_score }}%</span>
+                        <div class="p-3 bg-dark-50 rounded-3 border border-color h-100 d-flex align-items-center justify-content-between">
+                            <div>
+                                <div class="small text-low">ATS Score</div>
+                                <div class="fw-bold text-info fs-4 mt-1">{{ resume.ats_score }}%</div>
+                                <div class="text-low" style="font-size: 11px;">Gemini profile score</div>
+                            </div>
+                            <div class="position-relative" style="width: 55px; height: 55px;">
+                                <svg class="circular-chart" viewBox="0 0 36 36" style="width: 100%; height: 100%; transform: rotate(-90deg);">
+                                    <path class="circle-bg"
+                                        d="M18 2.0845
+                                            a 15.9155 15.9155 0 0 1 0 31.831
+                                            a 15.9155 15.9155 0 0 1 0 -31.831"
+                                        fill="none"
+                                        stroke="rgba(255,255,255,0.08)"
+                                        stroke-width="3.5"
+                                    />
+                                    <path class="circle-fill"
+                                        style="--dashoffset: {{ 100 - resume.ats_score }};"
+                                        stroke-dasharray="100"
+                                        stroke-dashoffset="100"
+                                        d="M18 2.0845
+                                            a 15.9155 15.9155 0 0 1 0 31.831
+                                            a 15.9155 15.9155 0 0 1 0 -31.831"
+                                        fill="none"
+                                        stroke="#66fcf1"
+                                        stroke-width="3.5"
+                                        stroke-linecap="round"
+                                    />
+                                </svg>
                             </div>
                         </div>
                     </div>
@@ -114,7 +136,7 @@
         {% endif %}
 
         <!-- Completed Interviews History -->
-        <div class="glass-card">
+        <div class="glass-card" data-tilt data-tilt-max="3">
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <h4 class="mb-0" style="font-family: 'Outfit', sans-serif;">Recent Interviews</h4>
                 <a href="{{ url_for('analytics.history') }}" class="text-info small text-decoration-none">View All</a>
@@ -158,7 +180,7 @@
     <!-- Right Column (Gamification Progress & Badges) -->
     <div class="col-lg-4">
         <!-- Level Progress Card -->
-        <div class="glass-card mb-4">
+        <div class="glass-card mb-4" data-tilt data-tilt-max="8">
             <h5 class="mb-3" style="font-family: 'Outfit', sans-serif;"><i class="bi bi-person-fill text-info"></i> Performance Tier</h5>
             <div class="d-flex align-items-center justify-content-between mb-2 small">
                 <span class="text-info fw-bold">{{ level_info.level }}</span>
@@ -175,7 +197,7 @@
         </div>
 
         <!-- Badges Card -->
-        <div class="glass-card">
+        <div class="glass-card" data-tilt data-tilt-max="8">
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <h5 class="mb-0" style="font-family: 'Outfit', sans-serif;"><i class="bi bi-trophy-fill text-warning"></i> Badges Unlocked</h5>
                 <a href="{{ url_for('analytics.gamification') }}" class="text-info small text-decoration-none">All Badges</a>
