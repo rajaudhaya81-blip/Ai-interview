@@ -14,7 +14,13 @@ class Config:
         database_url = database_url.replace('postgres://', 'postgresql://', 1)
     
     # Fallback to local SQLite for development if no database URL is provided
-    SQLALCHEMY_DATABASE_URI = database_url or 'sqlite:///interview.db'
+    # On Vercel, we must put the SQLite DB in /tmp to avoid read-only filesystem errors
+    if os.environ.get('VERCEL'):
+        sqlite_fallback = 'sqlite:////tmp/interview.db'
+    else:
+        sqlite_fallback = 'sqlite:///interview.db'
+        
+    SQLALCHEMY_DATABASE_URI = database_url or sqlite_fallback
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     
     # Supabase Credentials
