@@ -47,6 +47,10 @@ def create_app():
     def landing():
         return render_template('landing.html')
         
+    # Register Error Handlers
+    from app.error_handlers import register_error_handlers
+    register_error_handlers(app)
+        
     # Global HTTP Context Processor to check settings / theme
     @app.context_processor
     def inject_global_settings():
