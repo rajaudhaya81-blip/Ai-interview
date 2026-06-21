@@ -24,6 +24,10 @@ class Config:
     # Gemini API Credentials
     GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY')
     
-    # Local upload path (if Supabase upload fails or as a cache)
-    UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'static', 'uploads')
+    # Vercel sets VERCEL=1 automatically — its filesystem is read-only except /tmp
+    # Use /tmp/uploads on Vercel, local static/uploads everywhere else
+    if os.environ.get('VERCEL'):
+        UPLOAD_FOLDER = '/tmp/uploads'
+    else:
+        UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'static', 'uploads')
     MAX_CONTENT_LENGTH = 10 * 1024 * 1024  # 10 MB

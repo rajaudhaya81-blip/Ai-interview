@@ -12,14 +12,8 @@ def create_app():
     # Load configuration
     app.config.from_object('config.settings.Config')
     
-    # On Vercel, the filesystem is read-only except /tmp
-    # Use /tmp as fallback for upload folder on serverless environments
-    upload_folder = app.config.get('UPLOAD_FOLDER', 'static/uploads')
-    if not os.access(os.path.dirname(upload_folder) or '.', os.W_OK):
-        upload_folder = '/tmp/uploads'
-        app.config['UPLOAD_FOLDER'] = upload_folder
-
-    # Create upload directories (silently skip if filesystem is read-only)
+    # Create upload subdirectories — wrapped in try/except for read-only filesystems (e.g. Vercel)
+    upload_folder = app.config['UPLOAD_FOLDER']
     for sub in ['', 'resume', 'audio', 'reports']:
         try:
             os.makedirs(os.path.join(upload_folder, sub), exist_ok=True)
