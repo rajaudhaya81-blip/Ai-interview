@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+{% block title %}Sign Up - InterviewAI{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center align-items-center py-5">
+    <div class="col-md-6 col-lg-5">
+        <div class="glass-card">
+            <h3 class="text-center mb-4" style="font-family: 'Outfit', sans-serif;">Create User Account</h3>
+            
+            <form action="{{ url_for('auth.register') }}" method="POST">
+                <div class="mb-3">
+                    <label for="full_name" class="form-label">Full Name</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-dark-50 border-color"><i class="bi bi-person text-info"></i></span>
+                        <input type="text" class="form-control" id="full_name" name="full_name" required placeholder="John Doe">
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email Address</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-dark-50 border-color"><i class="bi bi-envelope text-info"></i></span>
+                        <input type="email" class="form-control" id="email" name="email" required placeholder="john@example.com">
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="phone" class="form-label">Mobile Number</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-dark-50 border-color"><i class="bi bi-telephone text-info"></i></span>
+                        <input type="tel" class="form-control" id="phone" name="phone" placeholder="+1234567890">
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="password" class="form-label">Password</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-dark-50 border-color"><i class="bi bi-lock text-info"></i></span>
+                        <input type="password" class="form-control" id="password" name="password" required placeholder="••••••••">
+                    </div>
+                    <div class="form-text text-low" style="font-size: 11px;">Must be at least 8 characters with 1 number & 1 special character.</div>
+                </div>
+                
+                <div class="mb-4">
+                    <label for="confirm_password" class="form-label">Confirm Password</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-dark-50 border-color"><i class="bi bi-shield-lock text-info"></i></span>
+                        <input type="password" class="form-control" id="confirm_password" name="confirm_password" required placeholder="••••••••">
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn btn-primary-custom w-100 py-2.5 mb-3">Sign Up</button>
+                
+                <p class="text-center text-med mb-0 small">
+                    Already have an account? <a href="{{ url_for('auth.login') }}" class="text-info">Login here</a>
+                </p>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

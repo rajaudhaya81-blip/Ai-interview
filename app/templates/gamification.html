@@ -1,0 +1,141 @@
+{% extends 'base.html' %}
+
+{% block title %}Gamification Badges - InterviewAI{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h2 style="font-family: 'Outfit', sans-serif;"><i class="bi bi-trophy text-warning"></i> Gamification & Achievements</h2>
+        <p class="text-low">Unlock achievements, gain XP, and maintain your practice streak.</p>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Left Column (Badges Board) -->
+    <div class="col-lg-7">
+        <div class="glass-card mb-4">
+            <h4 class="mb-4" style="font-family: 'Outfit', sans-serif;"><i class="bi bi-award-fill text-info"></i> Achievement Badges</h4>
+            
+            {% set earned_names = [] %}
+            {% for a in achievements %}
+                {% set _ = earned_names.append(a.badge_name) %}
+            {% endfor %}
+            
+            <div class="row g-3">
+                <!-- Badge 1: First Interview -->
+                <div class="col-sm-6">
+                    <div class="badge-card {% if 'First Interview' in earned_names %}unlocked{% else %}locked{% endif %}">
+                        <i class="bi bi-patch-check-fill fs-3"></i>
+                        <div>
+                            <div class="fw-bold text-white small">First Interview</div>
+                            <div class="text-low" style="font-size: 11px;">Complete 1 mock interview session.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Badge 2: 5 Interviews -->
+                <div class="col-sm-6">
+                    <div class="badge-card {% if '5 Interviews' in earned_names %}unlocked{% else %}locked{% endif %}">
+                        <i class="bi bi-collection-play-fill fs-3"></i>
+                        <div>
+                            <div class="fw-bold text-white small">5 Interviews</div>
+                            <div class="text-low" style="font-size: 11px;">Complete 5 practice sessions.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Badge 3: 10 Interviews -->
+                <div class="col-sm-6">
+                    <div class="badge-card {% if '10 Interviews' in earned_names %}unlocked{% else %}locked{% endif %}">
+                        <i class="bi bi-award-fill fs-3"></i>
+                        <div>
+                            <div class="fw-bold text-white small">10 Interviews</div>
+                            <div class="text-low" style="font-size: 11px;">Complete 10 practice sessions.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Badge 4: Python Expert -->
+                <div class="col-sm-6">
+                    <div class="badge-card {% if 'Python Expert' in earned_names %}unlocked{% else %}locked{% endif %}">
+                        <i class="bi bi-code-slash fs-3"></i>
+                        <div>
+                            <div class="fw-bold text-white small">Python Expert</div>
+                            <div class="text-low" style="font-size: 11px;">Have a Python proficiency rating >= 85%.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Badge 5: Flask Expert -->
+                <div class="col-sm-6">
+                    <div class="badge-card {% if 'Flask Expert' in earned_names %}unlocked{% else %}locked{% endif %}">
+                        <i class="bi bi-lightning-fill fs-3"></i>
+                        <div>
+                            <div class="fw-bold text-white small">Flask Expert</div>
+                            <div class="text-low" style="font-size: 11px;">Have a Flask proficiency rating >= 85%.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Badge 6: Consistency Champion -->
+                <div class="col-sm-6">
+                    <div class="badge-card {% if 'Consistency Champion' in earned_names %}unlocked{% else %}locked{% endif %}">
+                        <i class="bi bi-fire fs-3"></i>
+                        <div>
+                            <div class="fw-bold text-white small">Consistency Champion</div>
+                            <div class="text-low" style="font-size: 11px;">Maintain a daily streak of >= 3 days.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Badge 7: Daily Streak -->
+                <div class="col-sm-6">
+                    <div class="badge-card {% if 'Daily Streak' in earned_names %}unlocked{% else %}locked{% endif %}">
+                        <i class="bi bi-calendar-check fs-3"></i>
+                        <div>
+                            <div class="fw-bold text-white small">Streak Master</div>
+                            <div class="text-low" style="font-size: 11px;">Maintain a daily streak of >= 7 days.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Column (XP Log) -->
+    <div class="col-lg-5">
+        <div class="glass-card mb-4">
+            <h5 class="mb-3" style="font-family: 'Outfit', sans-serif;"><i class="bi bi-stars text-info"></i> Performance Summary</h5>
+            <div class="row text-center g-2 mb-3">
+                <div class="col bg-dark-50 p-3 rounded border border-color">
+                    <div class="small text-low">Total XP</div>
+                    <div class="fw-bold text-white fs-4 mt-1">{{ total_xp }}</div>
+                </div>
+                <div class="col bg-dark-50 p-3 rounded border border-color">
+                    <div class="small text-low">Streak</div>
+                    <div class="fw-bold text-warning fs-4 mt-1"><i class="bi bi-fire"></i> {{ streak_count }} Days</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="glass-card" style="max-height: 400px; overflow-y: auto;">
+            <h5 class="mb-3" style="font-family: 'Outfit', sans-serif;"><i class="bi bi-clock-history text-info"></i> XP Earning Log</h5>
+            {% if xp_history %}
+                <div class="d-flex flex-column gap-2">
+                    {% for item in xp_history %}
+                        <div class="p-2 bg-dark-50 rounded border border-color d-flex justify-content-between align-items-center">
+                            <div>
+                                <div class="text-white small fw-bold">{{ item.activity_type }}</div>
+                                <div class="text-low small" style="font-size: 10px;">{{ item.created_at.strftime('%Y-%m-%d %H:%M') }}</div>
+                            </div>
+                            <span class="badge bg-violet text-white">+{{ item.xp_gain }} XP</span>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="text-low small text-center my-3">No XP logged yet.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

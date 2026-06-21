@@ -1,0 +1,166 @@
+{% extends 'base.html' %}
+
+{% block title %}Upload Resume - InterviewAI{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center py-4">
+    <div class="col-md-8">
+        <!-- Progress Tracker -->
+        <div class="glass-card mb-4">
+            <div class="tracker-container">
+                <div class="tracker-line"></div>
+                <div class="tracker-line-fill" id="upload-progress-line" style="width: 12.5%;"></div>
+                
+                <div class="tracker-step active" id="step-1">1</div>
+                <div class="tracker-step" id="step-2">2</div>
+                <div class="tracker-step" id="step-3">3</div>
+                <div class="tracker-step" id="step-4">4</div>
+            </div>
+            <div class="d-flex justify-content-between text-low small">
+                <span>Upload Resume</span>
+                <span>Analyze Profile</span>
+                <span>Mock Interview</span>
+                <span>Get AI Feedback</span>
+            </div>
+        </div>
+
+        <!-- Main Drag/Drop Zone -->
+        <div class="glass-card text-center p-5 border border-dashed border-color" id="drop-zone" style="border-style: dashed !important; transition: all 0.3s ease;">
+            <i class="bi bi-file-earmark-arrow-up text-info display-2 mb-3"></i>
+            <h3 style="font-family: 'Outfit', sans-serif;">Upload Your Professional Resume</h3>
+            <p class="text-low mb-4">Supported formats: PDF, DOCX (Max 10 MB)</p>
+            
+            <form id="upload-form" enctype="multipart/form-data">
+                <input type="file" id="resume-file" name="resume" class="d-none" accept=".pdf,.docx">
+                <button type="button" class="btn btn-primary-custom px-4 py-2.5 mb-3" onclick="document.getElementById('resume-file').click()">
+                    Browse Files
+                </button>
+            </form>
+            <p class="text-low small mb-0">or drag and drop your file directly here</p>
+        </div>
+
+        <!-- Analysis State / Skeletons (Hidden by default) -->
+        <div class="glass-card d-none mt-4" id="analysis-zone">
+            <div class="d-flex align-items-center gap-3 mb-4">
+                <div class="spinner-border text-info" role="status"></div>
+                <div>
+                    <h5 class="mb-0 text-white" id="loading-header">Uploading Resume...</h5>
+                    <p class="text-low small mb-0" id="loading-subtext">Sending file securely to storage.</p>
+                </div>
+            </div>
+            
+            <!-- Skeleton Blocks -->
+            <div class="skeleton mb-3" style="height: 25px; width: 60%;"></div>
+            <div class="skeleton mb-3" style="height: 15px; width: 100%;"></div>
+            <div class="skeleton mb-3" style="height: 15px; width: 85%;"></div>
+            <div class="skeleton mb-3" style="height: 15px; width: 90%;"></div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const dropZone = document.getElementById('drop-zone');
+    const fileInput = document.getElementById('resume-file');
+    const uploadForm = document.getElementById('upload-form');
+    const analysisZone = document.getElementById('analysis-zone');
+    const progressLine = document.getElementById('upload-progress-line');
+    const step2 = document.getElementById('step-2');
+    const step3 = document.getElementById('step-3');
+    
+    // Drag & Drop event bindings
+    ['dragenter', 'dragover'].forEach(eventName => {
+        dropZone.addEventListener(eventName, (e) => {
+            e.preventDefault();
+            dropZone.style.borderColor = 'var(--primary)';
+            dropZone.style.background = 'rgba(102, 252, 241, 0.05)';
+        }, false);
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+        dropZone.addEventListener(eventName, (e) => {
+            e.preventDefault();
+            dropZone.style.borderColor = 'var(--border-color)';
+            dropZone.style.background = 'var(--surface-color)';
+        }, false);
+    });
+
+    dropZone.addEventListener('drop', (e) => {
+        const dt = e.dataTransfer;
+        const files = dt.files;
+        if (files.length > 0) {
+            handleFileUpload(files[0]);
+        }
+    });
+
+    fileInput.addEventListener('change', () => {
+        if (fileInput.files.length > 0) {
+            handleFileUpload(fileInput.files[0]);
+        }
+    });
+
+    function handleFileUpload(file) {
+        // Validation
+        const ext = file.name.split('.').pop().toLowerCase();
+        if (ext !== 'pdf' && ext !== 'docx') {
+            alert('Invalid file format. Please upload a PDF or DOCX file.');
+            return;
+        }
+        
+        if (file.size > 10 * 1024 * 1024) { // 10MB
+            alert('File size exceeds the 10 MB limit.');
+            return;
+        }
+
+        // Show loading state
+        dropZone.classList.add('d-none');
+        analysisZone.classList.remove('d-none');
+        
+        const formData = new FormData();
+        formData.append('resume', file);
+
+        // Upload Phase
+        fetch('/upload', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => {
+            // Update progress line to "Analyze" (37.5%)
+            progressLine.style.width = '37.5%';
+            step2.classList.add('active');
+            document.getElementById('loading-header').textContent = 'AI Profile Analysis in Progress...';
+            document.getElementById('loading-subtext').textContent = 'Extracting skills, projects, and computing ATS compatibility.';
+            
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                // Navigate to intelligence page
+                progressLine.style.width = '62.5%';
+                step3.classList.add('active');
+                setTimeout(() => {
+                    window.location.href = '/intel';
+                }, 1000);
+            } else {
+                alert(`Upload failed: ${data.message}`);
+                // Revert UI
+                dropZone.classList.remove('d-none');
+                analysisZone.classList.add('d-none');
+                progressLine.style.width = '12.5%';
+                step2.classList.remove('active');
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            alert('An error occurred during resume uploading.');
+            dropZone.classList.remove('d-none');
+            analysisZone.classList.add('d-none');
+            progressLine.style.width = '12.5%';
+            step2.classList.remove('active');
+        });
+    }
+});
+</script>
+{% endblock %}

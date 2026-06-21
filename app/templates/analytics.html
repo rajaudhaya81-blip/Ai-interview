@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+
+{% block title %}Analytics - InterviewAI{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h2 style="font-family: 'Outfit', sans-serif;"><i class="bi bi-graph-up text-info"></i> Analytics & Trends</h2>
+        <p class="text-low">Observe your progress, history, and key improvement areas over time.</p>
+    </div>
+</div>
+
+<!-- Metrics summary cards -->
+<div class="row g-3 mb-4">
+    <div class="col-md-4">
+        <div class="glass-card text-center py-4">
+            <h2 class="display-6 fw-bold text-info mb-1">{{ total_interviews }}</h2>
+            <p class="text-low mb-0">Total Simulated Interviews</p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="glass-card text-center py-4">
+            <h2 class="display-6 fw-bold text-info mb-1">{{ avg_score }}%</h2>
+            <p class="text-low mb-0">Average Interview Score</p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="glass-card text-center py-4">
+            <h2 class="display-6 fw-bold text-info mb-1">{{ max_score }}%</h2>
+            <p class="text-low mb-0">Personal Best Score</p>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Section -->
+{% if total_interviews > 0 %}
+<div class="row g-4 mb-4">
+    <!-- Line Chart (Performance Trend) -->
+    <div class="col-lg-8">
+        <div class="glass-card h-100">
+            <h5 class="mb-4 text-white" style="font-family: 'Outfit', sans-serif;"><i class="bi bi-activity text-info"></i> Performance Trend</h5>
+            <div style="height: 300px; position: relative;">
+                <canvas id="chart-performance-trend" data-chart-data="{{ performance_trend }}"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Doughnut Chart (Category Counts) -->
+    <div class="col-lg-4">
+        <div class="glass-card h-100">
+            <h5 class="mb-4 text-white" style="font-family: 'Outfit', sans-serif;"><i class="bi bi-pie-chart-fill text-info"></i> Interview Types</h5>
+            <div style="height: 300px; position: relative;">
+                <canvas id="chart-category-dist" data-chart-data="{{ category_counts }}"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Full History Table -->
+<div class="glass-card">
+    <h4 class="mb-4" style="font-family: 'Outfit', sans-serif;"><i class="bi bi-clock-history text-info"></i> Complete Interview Log</h4>
+    {% if interviews %}
+        <div class="table-responsive">
+            <table class="table table-dark table-hover mb-0 align-middle">
+                <thead>
+                    <tr class="text-low">
+                        <th>Date</th>
+                        <th>Category</th>
+                        <th>Difficulty</th>
+                        <th>Target Company</th>
+                        <th>Score</th>
+                        <th>Outcome</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for i in interviews %}
+                        <tr>
+                            <td class="small">{{ i.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                            <td><span class="badge bg-dark border border-color text-med">{{ i.type }}</span></td>
+                            <td>{{ i.difficulty }}</td>
+                            <td>{{ i.company }}</td>
+                            <td>
+                                <span class="fw-bold text-{{ 'success' if i.score >= 75 else 'warning' }}">{{ i.score }}%</span>
+                            </td>
+                            <td>
+                                {% if i.score >= 75 %}
+                                    <span class="badge bg-success-subtle text-success border border-success">Recommended</span>
+                                {% else %}
+                                    <span class="badge bg-warning-subtle text-warning border border-warning">Practice Required</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-end">
+                                <div class="d-inline-flex gap-2">
+                                    <a href="{{ url_for('interview.report_view', interview_id=i.id) }}" class="btn btn-secondary-custom btn-sm"><i class="bi bi-file-earmark-bar-graph"></i> Report</a>
+                                    {% if i.report and i.report.report_files %}
+                                        <a href="{{ i.report.report_files[0].file_url }}" target="_blank" class="btn btn-violet btn-sm"><i class="bi bi-file-pdf"></i> PDF</a>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p class="text-low text-center my-4">No interviews logged. Complete your first practice session to see analytics details.</p>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<!-- Include charts orchestration script -->
+<script src="{{ url_for('static', filename='js/charts.js') }}"></script>
+{% endblock %}

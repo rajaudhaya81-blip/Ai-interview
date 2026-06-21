@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block title %}Interview History - InterviewAI{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h2 style="font-family: 'Outfit', sans-serif;"><i class="bi bi-clock-history text-info"></i> Practice History</h2>
+        <p class="text-low">View and review all of your previous simulated interviews.</p>
+    </div>
+</div>
+
+<div class="glass-card">
+    {% if interviews %}
+        <div class="table-responsive">
+            <table class="table table-dark table-hover mb-0 align-middle">
+                <thead>
+                    <tr class="text-low">
+                        <th>Date</th>
+                        <th>Type</th>
+                        <th>Difficulty</th>
+                        <th>Personality</th>
+                        <th>Company</th>
+                        <th>Score</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for i in interviews %}
+                        <tr>
+                            <td class="small">{{ i.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                            <td><span class="badge bg-dark border border-color text-med">{{ i.type }}</span></td>
+                            <td>{{ i.difficulty }}</td>
+                            <td>{{ i.personality }}</td>
+                            <td>{{ i.company }}</td>
+                            <td>
+                                {% if i.status == 'completed' %}
+                                    <span class="fw-bold text-{{ 'success' if i.score >= 75 else 'warning' }}">{{ i.score }}%</span>
+                                {% else %}
+                                    <span class="badge bg-dark text-low border border-color">{{ i.status }}</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-end">
+                                <div class="d-inline-flex gap-2">
+                                    {% if i.status == 'completed' %}
+                                        <a href="{{ url_for('interview.report_view', interview_id=i.id) }}" class="btn btn-secondary-custom btn-sm">Report</a>
+                                        {% if i.report and i.report.report_files %}
+                                            <a href="{{ i.report.report_files[0].file_url }}" target="_blank" class="btn btn-violet btn-sm"><i class="bi bi-file-pdf"></i> Download PDF</a>
+                                        {% endif %}
+                                    {% else %}
+                                        <a href="{{ url_for('interview.room', interview_id=i.id) }}" class="btn btn-primary-custom btn-sm">Resume</a>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p class="text-low text-center my-4">No interviews logged yet.</p>
+    {% endif %}
+</div>
+{% endblock %}

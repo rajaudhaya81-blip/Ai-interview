@@ -1,0 +1,135 @@
+{% extends 'base.html' %}
+
+{% block title %}Resume Intelligence - InterviewAI{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h2 style="font-family: 'Outfit', sans-serif;"><i class="bi bi-cpu text-info"></i> Resume Intelligence</h2>
+        <p class="text-low">Comprehensive parser feedback and compatibility insights.</p>
+    </div>
+    <div class="col-md-4 text-md-end">
+        <a href="{{ url_for('interview.setup') }}" class="btn btn-primary-custom py-2 px-4">
+            <i class="bi bi-play-circle-fill me-2"></i> Start Simulator
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Stats Cards -->
+    <div class="col-lg-4 mb-4">
+        <!-- Resume Score -->
+        <div class="glass-card mb-4 text-center py-4">
+            <div class="display-4 fw-bold text-info mb-1">{{ resume.score }}</div>
+            <div class="text-low small">Resume Quality Score</div>
+            <hr class="bg-secondary my-3">
+            <div class="display-6 fw-bold text-success mb-1">{{ resume.ats_score }}%</div>
+            <div class="text-low small">ATS Match Estimate</div>
+        </div>
+
+        <!-- Career Level Card -->
+        <div class="glass-card mb-4">
+            <h5 class="mb-3" style="font-family: 'Outfit', sans-serif;"><i class="bi bi-bar-chart-fill text-info"></i> Career Level</h5>
+            <div class="p-3 bg-dark-50 rounded border border-color d-flex align-items-center justify-content-between">
+                <span class="text-med">Detected Level</span>
+                <span class="badge bg-violet fs-6 px-3 py-1.5">{{ resume.career_level }}</span>
+            </div>
+            <p class="text-low small mt-3 mb-0">The AI model classifies your profile complexity to tailor question difficulties.</p>
+        </div>
+
+        <!-- Certifications -->
+        <div class="glass-card">
+            <h5 class="mb-3" style="font-family: 'Outfit', sans-serif;"><i class="bi bi-patch-check-fill text-info"></i> Certifications</h5>
+            {% if resume.certifications %}
+                <div class="d-flex flex-column gap-2">
+                    {% for cert in resume.certifications %}
+                        <div class="p-2 bg-dark-50 rounded border border-color">
+                            <div class="fw-bold text-white small">{{ cert.name }}</div>
+                            <div class="text-low small" style="font-size: 11px;">{{ cert.issuer }}</div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="text-low small mb-0">No certifications parsed from resume.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Skills Chart & Projects List -->
+    <div class="col-lg-8 mb-4">
+        <!-- Skills Distribution Chart -->
+        <div class="glass-card mb-4">
+            <h5 class="mb-3" style="font-family: 'Outfit', sans-serif;"><i class="bi bi-tools text-info"></i> Skill Distribution</h5>
+            <div style="height: 250px; position: relative;">
+                <canvas id="skills-chart"></canvas>
+            </div>
+        </div>
+
+        <!-- Parsed Projects -->
+        <div class="glass-card">
+            <h5 class="mb-3" style="font-family: 'Outfit', sans-serif;"><i class="bi bi-folder-fill text-info"></i> Parsed Projects</h5>
+            {% if resume.projects %}
+                <div class="d-flex flex-column gap-3">
+                    {% for proj in resume.projects %}
+                        <div class="p-3 bg-dark-50 rounded border border-color">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <h6 class="mb-0 text-white fw-bold">{{ proj.title }}</h6>
+                                <span class="badge bg-dark border border-info text-info">Complexity: {{ proj.complexity_score }}%</span>
+                            </div>
+                            <p class="text-low small mb-0">{{ proj.description }}</p>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="text-low small mb-0">No projects parsed from resume.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const ctx = document.getElementById('skills-chart').getContext('2d');
+    
+    // Skills mapping from template variables
+    const skillLabels = [{% for s in resume.skills %}"{{ s.skill_name }}",{% endfor %}];
+    const skillScores = [{% for s in resume.skills %}{{ s.proficiency }},{% endfor %}];
+
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: skillLabels,
+            datasets: [{
+                label: 'Proficiency (%)',
+                data: skillScores,
+                backgroundColor: 'rgba(102, 252, 241, 0.45)',
+                borderColor: '#66fcf1',
+                borderWidth: 1.5,
+                borderRadius: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 100,
+                    grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                    ticks: { color: '#c5c6c7' }
+                },
+                x: {
+                    grid: { display: false },
+                    ticks: { color: '#c5c6c7' }
+                }
+            },
+            plugins: {
+                legend: { display: false }
+            }
+        }
+    });
+});
+</script>
+{% endblock %}

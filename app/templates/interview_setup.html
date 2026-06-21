@@ -1,0 +1,127 @@
+{% extends 'base.html' %}
+
+{% block title %}Setup Simulator - InterviewAI{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center py-4">
+    <div class="col-lg-8">
+        <div class="glass-card">
+            <h2 class="mb-4 text-center" style="font-family: 'Outfit', sans-serif;">
+                <i class="bi bi-sliders text-info"></i> Configure Your AI Interview
+            </h2>
+            
+            <form action="{{ url_for('interview.setup') }}" method="POST">
+                <div class="row g-3 mb-4">
+                    <!-- Category Selection -->
+                    <div class="col-md-6">
+                        <label for="category" class="form-label">Interview Type</label>
+                        <select class="form-select" id="category" name="category" required>
+                            <option value="Technical" selected>Technical (Coding & Concepts)</option>
+                            <option value="HR">HR & Cultural Fit</option>
+                            <option value="Project Viva">Project Viva & Deep-Dive</option>
+                            <option value="System Design">System Design & Scale</option>
+                            <option value="Aptitude">Aptitude & Logical Reasoning</option>
+                            <option value="Mixed">Mixed (Comprehensive)</option>
+                        </select>
+                    </div>
+
+                    <!-- Company-Specific Styling -->
+                    <div class="col-md-6">
+                        <label for="company" class="form-label">Target Company Context</label>
+                        <select class="form-select" id="company" name="company" required>
+                            <option value="General" selected>General Industry Standard</option>
+                            <option value="Google">Google (Algorithmic / Scale)</option>
+                            <option value="Amazon">Amazon (STAR / Leadership)</option>
+                            <option value="Microsoft">Microsoft (Coding / Architecture)</option>
+                            <option value="Meta">Meta (Systems / APIs)</option>
+                            <option value="Netflix">Netflix (Resilience / Performance)</option>
+                            <option value="TCS">TCS (Enterprise SDLC)</option>
+                            <option value="Infosys">Infosys (Agile / Quality)</option>
+                            <option value="Zoho">Zoho (Craftsmanship / Optimization)</option>
+                            <option value="Freshworks">Freshworks (SaaS / APIs)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row g-3 mb-4">
+                    <!-- Difficulty Selection -->
+                    <div class="col-md-6">
+                        <label for="difficulty" class="form-label">Difficulty Level</label>
+                        <select class="form-select" id="difficulty" name="difficulty" required>
+                            <option value="Easy">Easy (Entry Level)</option>
+                            <option value="Medium" selected>Medium (Associate)</option>
+                            <option value="Hard">Hard (Senior)</option>
+                            <option value="Expert">Expert (Lead/Principal)</option>
+                        </select>
+                    </div>
+
+                    <!-- Question Count Selection -->
+                    <div class="col-md-6">
+                        <label for="question_count" class="form-label">Question Count</label>
+                        <select class="form-select" id="question_count" name="question_count" required>
+                            <option value="10" selected>10 Questions</option>
+                            <option value="20">20 Questions</option>
+                            <option value="30">30 Questions</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row g-3 mb-4">
+                    <!-- Time Limit Selection -->
+                    <div class="col-md-6">
+                        <label for="time_limit" class="form-label">Time Limit</label>
+                        <select class="form-select" id="time_limit" name="time_limit" required>
+                            <option value="15">15 Minutes</option>
+                            <option value="30" selected>30 Minutes</option>
+                            <option value="45">45 Minutes</option>
+                            <option value="0">Unlimited (Practice Mode)</option>
+                        </select>
+                    </div>
+
+                    <!-- Interviewer Personality Selection -->
+                    <div class="col-md-6">
+                        <label for="personality" class="form-label">Interviewer Personality</label>
+                        <select class="form-select" id="personality" name="personality" required onchange="updatePersonalityDescription(this.value)">
+                            <option value="Friendly Recruiter" selected>Friendly Recruiter</option>
+                            <option value="Strict FAANG Interviewer">Strict FAANG Interviewer</option>
+                            <option value="Startup Founder">Startup Founder</option>
+                            <option value="HR Manager">HR Manager</option>
+                            <option value="Technical Architect">Technical Architect</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Personality Description Helper Card -->
+                <div class="p-3 bg-dark-50 rounded border border-color mb-4" id="personality-card" style="transition: all 0.3s ease;">
+                    <div class="fw-bold text-white mb-1"><i class="bi bi-info-circle text-info"></i> Interviewer Archetype Tone:</div>
+                    <p class="text-low small mb-0" id="personality-description">
+                        A warm, welcoming, and encouraging HR recruiter. Focuses on communication, basic understanding, and soft skills. Tries to make the candidate comfortable and uses a positive, conversational tone.
+                    </p>
+                </div>
+
+                <div class="text-center py-2">
+                    <button type="submit" class="btn btn-primary-custom px-5 py-3 fs-6">
+                        <i class="bi bi-play-circle-fill me-2"></i> Generate & Enter Interview Room
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const descriptions = {
+    "Friendly Recruiter": "A warm, welcoming, and encouraging HR recruiter. Focuses on communication, basic understanding, and soft skills. Tries to make the candidate comfortable and uses a positive, conversational tone.",
+    "Strict FAANG Interviewer": "A rigorous, demanding, and direct interviewer. Values optimal solutions, performance tradeoffs, Big O notation, scalability, and technical depth. Challenges weak or vague answers, drills deep into assumptions, and maintains a formal, objective tone.",
+    "Startup Founder": "A high-energy, fast-paced, and practical founder. Focuses on speed of execution, hands-on building, versatility, problem-solving, and direct business impact. Asks how the candidate would build features from scratch under tight deadlines.",
+    "HR Manager": "A professional focused on cultural alignment, emotional intelligence, conflict resolution, teamwork, ethics, and long-term career goals. Asks behavioral questions using the STAR method.",
+    "Technical Architect": "A seasoned systems architect focusing on software architecture, design patterns, microservices, database design, security, reliability, scalability, and system trade-offs. Asks structural and design questions."
+};
+
+function updatePersonalityDescription(val) {
+    document.getElementById('personality-description').textContent = descriptions[val] || descriptions["Friendly Recruiter"];
+}
+</script>
+{% endblock %}

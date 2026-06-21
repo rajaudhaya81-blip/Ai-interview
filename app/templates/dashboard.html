@@ -1,0 +1,202 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - InterviewAI{% endblock %}
+
+{% block content %}
+<!-- Welcome & XP Banner -->
+<div class="row mb-4">
+    <div class="col-lg-8">
+        <h2 style="font-family: 'Outfit', sans-serif;">Welcome back, <span class="text-info">{{ current_user.full_name }}</span>!</h2>
+        <p class="text-low">Ready to level up your career readiness today?</p>
+    </div>
+    <div class="col-lg-4 text-lg-end">
+        <div class="d-inline-flex align-items-center gap-3 glass-card py-2 px-3">
+            <div class="text-end">
+                <div class="small text-low">Current Streak</div>
+                <div class="fw-bold text-warning"><i class="bi bi-fire"></i> {{ streak_count }} Day{{ 's' if streak_count != 1 }}</div>
+            </div>
+            <div class="vr bg-secondary"></div>
+            <div>
+                <span class="badge bg-violet px-3 py-2 fs-6">{{ level_info.level }}</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Active Session Restoration Banner -->
+{% if active_session and resume_interview %}
+<div class="alert alert-info bg-dark-50 border-info text-white p-4 mb-4 glass-card d-flex align-items-center justify-content-between flex-wrap gap-3">
+    <div>
+        <h4 class="alert-heading text-info mb-1" style="font-family: 'Outfit', sans-serif;"><i class="bi bi-clock-history"></i> Incomplete Interview Session Found</h4>
+        <p class="mb-0 text-med">You were in the middle of a <strong>{{ resume_interview.difficulty }} {{ resume_interview.type }}</strong> interview (Company: {{ resume_interview.company }}). Resume where you left off!</p>
+    </div>
+    <div>
+        <a href="{{ url_for('interview.room', interview_id=resume_interview.id) }}" class="btn btn-primary-custom px-4 py-2"><i class="bi bi-play-fill"></i> Resume Interview</a>
+        <form action="{{ url_for('interview.abandon', interview_id=resume_interview.id) }}" method="POST" class="d-inline-block ms-2">
+            <button type="submit" class="btn btn-secondary-custom px-3 py-2 btn-sm text-danger"><i class="bi bi-trash"></i> Abandon</button>
+        </form>
+    </div>
+</div>
+{% endif %}
+
+<!-- Main Layout -->
+<div class="row">
+    <!-- Left Column -->
+    <div class="col-lg-8 mb-4">
+        {% if not has_resume %}
+            <!-- Onboarding Card -->
+            <div class="glass-card mb-4">
+                <h4 class="mb-3" style="font-family: 'Outfit', sans-serif;">Complete Your Onboarding</h4>
+                <p class="text-low">Upload your resume to allow our AI to generate personalized technical and situational interview questions.</p>
+                
+                <!-- Onboarding Progress Tracker -->
+                <div class="tracker-container">
+                    <div class="tracker-line"></div>
+                    <div class="tracker-line-fill" style="width: 12.5%;"></div>
+                    
+                    <div class="tracker-step active" title="Upload Resume">1</div>
+                    <div class="tracker-step" title="Analyze Resume">2</div>
+                    <div class="tracker-step" title="Start Interview">3</div>
+                    <div class="tracker-step" title="Get AI Report">4</div>
+                </div>
+                
+                <div class="d-flex justify-content-between text-low small mb-4">
+                    <span>Upload Resume</span>
+                    <span>Analyze Profile</span>
+                    <span>Mock Interview</span>
+                    <span>Get AI Feedback</span>
+                </div>
+                
+                <div class="text-center py-3">
+                    <a href="{{ url_for('resume.upload') }}" class="btn btn-primary-custom px-4 py-2.5">
+                        <i class="bi bi-cloud-arrow-up-fill me-2"></i> Upload Resume (.PDF / .DOCX)
+                    </a>
+                </div>
+            </div>
+        {% else %}
+            <!-- Standard Dashboard Stats & Core CTA -->
+            <div class="glass-card mb-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h4 class="mb-0" style="font-family: 'Outfit', sans-serif;">AI Mock Interview Simulator</h4>
+                    <span class="badge bg-dark text-info border border-info px-2.5 py-1.5">Resume Verified</span>
+                </div>
+                <p class="text-low">Generate a professional interview simulated by the Gemini API, customized to your skills, a selected company style, and interviewer personality.</p>
+                
+                <div class="row g-3 mb-4">
+                    <div class="col-sm-6">
+                        <div class="p-3 bg-dark-50 rounded-3 border border-color h-100">
+                            <div class="small text-low">ATS Score</div>
+                            <div class="d-flex align-items-center gap-2 mt-1">
+                                <div class="progress flex-grow-1" style="height: 8px;">
+                                    <div class="progress-bar bg-info" style="width: {{ resume.ats_score }}%;"></div>
+                                </div>
+                                <span class="fw-bold text-white small">{{ resume.ats_score }}%</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="p-3 bg-dark-50 rounded-3 border border-color h-100">
+                            <div class="small text-low">Career Level</div>
+                            <div class="fw-bold text-white fs-5 mt-1"><i class="bi bi-bar-chart text-info"></i> {{ resume.career_level }}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex gap-3">
+                    <a href="{{ url_for('interview.setup') }}" class="btn btn-primary-custom px-4 py-2.5">
+                        <i class="bi bi-play-circle-fill me-2"></i> Start Practice Interview
+                    </a>
+                    <a href="{{ url_for('resume.upload') }}" class="btn btn-secondary-custom px-4 py-2.5">
+                        <i class="bi bi-arrow-repeat me-2"></i> Update Resume
+                    </a>
+                </div>
+            </div>
+        {% endif %}
+
+        <!-- Completed Interviews History -->
+        <div class="glass-card">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h4 class="mb-0" style="font-family: 'Outfit', sans-serif;">Recent Interviews</h4>
+                <a href="{{ url_for('analytics.history') }}" class="text-info small text-decoration-none">View All</a>
+            </div>
+            
+            {% if recent_interviews %}
+                <div class="table-responsive">
+                    <table class="table table-dark table-hover mb-0 align-middle">
+                        <thead>
+                            <tr class="text-low">
+                                <th>Date</th>
+                                <th>Category</th>
+                                <th>Company</th>
+                                <th>Score</th>
+                                <th class="text-end">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for i in recent_interviews %}
+                                <tr>
+                                    <td class="small">{{ i.created_at.strftime('%Y-%m-%d') }}</td>
+                                    <td><span class="badge bg-dark border border-color text-med">{{ i.type }}</span></td>
+                                    <td>{{ i.company }}</td>
+                                    <td>
+                                        <span class="fw-bold text-{{ 'success' if i.score >= 75 else 'warning' }}">{{ i.score }}%</span>
+                                    </td>
+                                    <td class="text-end">
+                                        <a href="{{ url_for('interview.report_view', interview_id=i.id) }}" class="btn btn-secondary-custom btn-sm py-1 px-2.5">Report</a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <p class="text-low text-center my-4">No interviews completed yet.</p>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Right Column (Gamification Progress & Badges) -->
+    <div class="col-lg-4">
+        <!-- Level Progress Card -->
+        <div class="glass-card mb-4">
+            <h5 class="mb-3" style="font-family: 'Outfit', sans-serif;"><i class="bi bi-person-fill text-info"></i> Performance Tier</h5>
+            <div class="d-flex align-items-center justify-content-between mb-2 small">
+                <span class="text-info fw-bold">{{ level_info.level }}</span>
+                <span class="text-low">{{ level_info.current_xp }} XP</span>
+            </div>
+            <div class="progress mb-3" style="height: 12px; background: rgba(0,0,0,0.3);">
+                <div class="progress-bar bg-info" style="width: {{ level_info.progress_pct }}%; box-shadow: 0 0 10px rgba(102,252,241,0.5);"></div>
+            </div>
+            {% if level_info.xp_needed > 0 %}
+                <div class="text-low small text-center"><i class="bi bi-stars"></i> Gain {{ level_info.xp_needed }} XP to unlock the next tier!</div>
+            {% else %}
+                <div class="text-info small text-center"><i class="bi bi-award-fill"></i> Maximum tier level unlocked!</div>
+            {% endif %}
+        </div>
+
+        <!-- Badges Card -->
+        <div class="glass-card">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="mb-0" style="font-family: 'Outfit', sans-serif;"><i class="bi bi-trophy-fill text-warning"></i> Badges Unlocked</h5>
+                <a href="{{ url_for('analytics.gamification') }}" class="text-info small text-decoration-none">All Badges</a>
+            </div>
+            
+            {% if achievements %}
+                <div class="d-flex flex-column gap-2">
+                    {% for badge in achievements %}
+                        <div class="badge-card unlocked">
+                            <i class="bi bi-patch-check-fill fs-4"></i>
+                            <div>
+                                <div class="fw-bold text-white small">{{ badge.badge_name }}</div>
+                                <div class="text-low" style="font-size: 10px;">Earned on {{ badge.earned_at.strftime('%Y-%m-%d') }}</div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="text-low small text-center my-3">Practice interviews to unlock badges!</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

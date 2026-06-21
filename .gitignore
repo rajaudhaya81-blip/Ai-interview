@@ -1,0 +1,19 @@
+# Flask/Python
+__pycache__/
+*.py[cod]
+*$py.class
+instance/
+.webassets-cache
+.pytest_cache/
+.env
+
+# Uploads and temporary files
+app/static/uploads/
+static/uploads/
+scratch/
+.agents/
+.gemini/
+
+# OS files
+.DS_Store
+Thumbs.db

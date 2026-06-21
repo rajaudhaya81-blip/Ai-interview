@@ -1,0 +1,180 @@
+{% extends 'base.html' %}
+
+{% block title %}Interview Report - InterviewAI{% endblock %}
+
+{% block content %}
+<!-- Header details -->
+<div class="row align-items-center mb-4">
+    <div class="col-md-8">
+        <h2 style="font-family: 'Outfit', sans-serif;"><i class="bi bi-file-earmark-bar-graph text-info"></i> Evaluation Report</h2>
+        <p class="text-low">Detailed analysis of your practice interview.</p>
+    </div>
+    <div class="col-md-4 text-md-end">
+        <!-- Download PDF from Supabase Storage -->
+        {% if report.report_files %}
+            <a href="{{ report.report_files[0].file_url }}" target="_blank" class="btn btn-violet py-2 px-4 mb-2">
+                <i class="bi bi-file-pdf-fill"></i> Download PDF Report
+            </a>
+        {% endif %}
+        <a href="{{ url_for('interview.setup') }}" class="btn btn-secondary-custom py-2 px-4 mb-2">
+            Practice Again
+        </a>
+    </div>
+</div>
+
+<!-- Score cards & Radar Chart -->
+<div class="row g-4 mb-4">
+    <!-- Left Column (General Metrics) -->
+    <div class="col-md-4">
+        <div class="glass-card text-center h-100 py-4 d-flex flex-column justify-content-center">
+            <div class="display-3 fw-bold text-info mb-1">{{ report.overall_score }}%</div>
+            <div class="text-low small mb-4">Overall Performance Score</div>
+            
+            <div class="display-4 fw-bold text-success mb-1">{{ report.readiness_score }}%</div>
+            <div class="text-low small">Job Readiness Estimate</div>
+        </div>
+    </div>
+    
+    <!-- Middle Column (Radar Chart) -->
+    <div class="col-md-4">
+        <div class="glass-card h-100">
+            <h5 class="mb-3 text-center" style="font-family: 'Outfit', sans-serif;"><i class="bi bi-graph-up-arrow text-info"></i> Skill Heatmap</h5>
+            <div style="height: 220px; position: relative;">
+                <canvas id="chart-skill-radar"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Column (Strengths/Weaknesses) -->
+    <div class="col-md-4">
+        <div class="glass-card h-100">
+            <h5 class="mb-3 text-info" style="font-family: 'Outfit', sans-serif;"><i class="bi bi-hand-thumbs-up-fill"></i> Highlights</h5>
+            <ul class="text-low small ps-3">
+                {% for strength in strengths %}
+                    <li class="mb-2">{{ strength }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+
+<!-- Recommendations & Learning Path -->
+<div class="row g-4 mb-4">
+    <div class="col-md-6">
+        <div class="glass-card h-100">
+            <h5 class="mb-3 text-white" style="font-family: 'Outfit', sans-serif;"><i class="bi bi-award-fill text-info"></i> Committee Placement Suggestion</h5>
+            <p class="text-med">{{ report.recommendations }}</p>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="glass-card h-100">
+            <h5 class="mb-3 text-white" style="font-family: 'Outfit', sans-serif;"><i class="bi bi-journals text-info"></i> Actionable Learning Plan</h5>
+            <div class="text-low small markdown-content">
+                {{ report.learning_path | safe }}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Question Analysis & Audio Playback -->
+<div class="glass-card mb-4">
+    <h4 class="mb-4" style="font-family: 'Outfit', sans-serif;"><i class="bi bi-chat-right-text-fill text-info"></i> Detailed Question-by-Question Analysis</h4>
+    
+    <div class="d-flex flex-column gap-4">
+        {% for qa in qa_data %}
+            <div class="p-3 bg-dark-50 rounded border border-color">
+                <!-- Question & Score Header -->
+                <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-3 border-bottom border-color pb-2">
+                    <h6 class="text-white fw-bold mb-0">Question {{ loop.index }}: {{ qa.question_text }}</h6>
+                    <span class="badge bg-violet">Score: {{ qa.score }}/100</span>
+                </div>
+                
+                <!-- Candidate Answer -->
+                <p class="text-med mb-3">
+                    <strong>Your Response:</strong><br/>
+                    <span class="text-low fs-6">{{ qa.answer_text }}</span>
+                </p>
+
+                <!-- Voice Replay Option -->
+                {% if qa.audio_url %}
+                    <div class="mb-3 p-2 bg-dark rounded d-inline-flex align-items-center gap-2">
+                        <span class="small text-low"><i class="bi bi-volume-up-fill text-info"></i> Playback Recording:</span>
+                        <audio src="{{ qa.audio_url }}" controls style="height: 30px; width: 220px;"></audio>
+                    </div>
+                {% endif %}
+
+                <!-- AI Follow-up & Evaluation -->
+                {% if qa.followup_question %}
+                    <div class="alert alert-info border-info bg-dark-50 text-white mb-3 p-3">
+                        <strong class="text-info"><i class="bi bi-reply-fill"></i> AI Follow-up:</strong> {{ qa.followup_question }}<br/>
+                        <strong class="text-med">Your Follow-up Response:</strong> {{ qa.followup_response or 'No response submitted.' }}
+                    </div>
+                {% endif %}
+
+                <!-- Metrics breakdown -->
+                <div class="row g-2 mb-3 text-center text-low small">
+                    <div class="col-sm-4 bg-dark py-1.5 rounded">Accuracy: <strong class="text-info">{{ qa.accuracy }}%</strong></div>
+                    <div class="col-sm-4 bg-dark py-1.5 rounded">Communication: <strong class="text-info">{{ qa.communication }}%</strong></div>
+                    <div class="col-sm-4 bg-dark py-1.5 rounded">Confidence: <strong class="text-info">{{ qa.confidence }}%</strong></div>
+                </div>
+
+                <!-- Feedback & Tips -->
+                <div class="p-3 rounded style-box text-low" style="background: rgba(138, 43, 226, 0.05); border-left: 4px solid var(--violet);">
+                    <strong>Evaluator Feedback:</strong><br/>
+                    <p class="small mb-2 mt-1">{{ qa.feedback }}</p>
+                    <strong>How to Improve:</strong><br/>
+                    <p class="small mb-0">{{ qa.improvement_tips }}</p>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const radarCtx = document.getElementById('chart-skill-radar').getContext('2d');
+    
+    // Skills loading from template variables
+    const skillLabels = [{% for k, v in skill_breakdown.items() %}"{{ k }}",{% endfor %}];
+    const skillScores = [{% for k, v in skill_breakdown.items() %}{{ v }},{% endfor %}];
+
+    new Chart(radarCtx, {
+        type: 'radar',
+        data: {
+            labels: skillLabels,
+            datasets: [{
+                label: 'Proficiency',
+                data: skillScores,
+                backgroundColor: 'rgba(102, 252, 241, 0.15)',
+                borderColor: '#66fcf1',
+                borderWidth: 2,
+                pointBackgroundColor: '#66fcf1'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                r: {
+                    angleLines: { color: 'rgba(255, 255, 255, 0.08)' },
+                    grid: { color: 'rgba(255, 255, 255, 0.08)' },
+                    pointLabels: { color: '#c5c6c7', font: { size: 9, family: 'Inter' } },
+                    ticks: {
+                        color: '#7a8288',
+                        backdropColor: 'transparent',
+                        showLabelBackdrop: false
+                    },
+                    suggestedMin: 0,
+                    suggestedMax: 100
+                }
+            },
+            plugins: {
+                legend: { display: false }
+            }
+        }
+    });
+});
+</script>
+{% endblock %}

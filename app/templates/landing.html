@@ -1,0 +1,153 @@
+{% extends 'base.html' %}
+
+{% block title %}InterviewAI - Practice AI Interviews{% endblock %}
+
+{% block content %}
+<div class="row align-items-center py-5">
+    <div class="col-lg-6 mb-4 mb-lg-0">
+        <h1 class="display-4 mb-3" style="line-height: 1.15; font-weight: 800; font-family: 'Outfit', sans-serif;">
+            Land Your Dream Job with <span class="text-info">InterviewAI</span>
+        </h1>
+        <p class="lead text-med mb-4 fs-5" style="max-width: 500px;">
+            Practice realistic, company-specific technical and behavioral interviews. Get instant evaluation, radar skill charts, and personalized career suggestions.
+        </p>
+        <div class="d-flex flex-wrap gap-3">
+            <a href="{{ url_for('auth.register') }}" class="btn btn-primary-custom py-3 px-4 fs-6">
+                Upload Resume and Practice AI Interviews
+            </a>
+            <a href="#features" class="btn btn-secondary-custom py-3 px-4 fs-6">
+                Explore Features
+            </a>
+        </div>
+    </div>
+    
+    <div class="col-lg-6 text-center">
+        <!-- Glowing Orb Visual representation of AI Interviewer -->
+        <div class="glass-card d-inline-block p-5" style="border-radius: 50%; box-shadow: 0 0 60px rgba(102, 252, 241, 0.15);">
+            <div class="avatar-pulse speaking" style="width: 200px; height: 200px;">
+                <div class="glass-card" style="border-radius: 50%; padding: 40px; background: rgba(0,0,0,0.4);">
+                    <i class="bi bi-cpu text-info" style="font-size: 80px; text-shadow: 0 0 20px rgba(102, 252, 241, 0.8);"></i>
+                </div>
+            </div>
+            <h3 class="mt-4 mb-1">Meet your AI Interviewer</h3>
+            <p class="text-low small mb-0">Dynamic. Adaptive. Professional.</p>
+        </div>
+    </div>
+</div>
+
+<!-- Platform Stats -->
+<div class="row my-5 text-center">
+    <div class="col-md-4 mb-4 mb-md-0">
+        <div class="glass-card h-100">
+            <h2 class="display-5 text-info font-weight-extrabold mb-1">50,000+</h2>
+            <p class="text-low mb-0">Mock Interviews Simulated</p>
+        </div>
+    </div>
+    <div class="col-md-4 mb-4 mb-md-0">
+        <div class="glass-card h-100">
+            <h2 class="display-5 text-info font-weight-extrabold mb-1">98%</h2>
+            <p class="text-low mb-0">ATS Score Improvement Rate</p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="glass-card h-100">
+            <h2 class="display-5 text-info font-weight-extrabold mb-1">100+</h2>
+            <p class="text-low mb-0">Global Companies Covered</p>
+        </div>
+    </div>
+</div>
+
+<!-- Features Section -->
+<div id="features" class="py-5">
+    <h2 class="text-center mb-5 display-6">Supercharge Your Preparation</h2>
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="glass-card h-100">
+                <i class="bi bi-robot text-info fs-2 mb-3 d-inline-block"></i>
+                <h4>Dynamic Questioning</h4>
+                <p class="text-low">Questions are dynamically generated based on your resume, skills, and projects using the Gemini API.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="glass-card h-100">
+                <i class="bi bi-mic text-info fs-2 mb-3 d-inline-block"></i>
+                <h4>Voice and Speech Analytics</h4>
+                <p class="text-low">Speak your answers. We analyze your speaking speed (WPM), speech confidence, and hesitation pauses.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="glass-card h-100">
+                <i class="bi bi-diagram-3 text-info fs-2 mb-3 d-inline-block"></i>
+                <h4>Conversational AI Follow-ups</h4>
+                <p class="text-low">If you give a brief or incomplete answer, the interviewer asks smart follow-ups to test your true depth.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="glass-card h-100">
+                <i class="bi bi-building text-info fs-2 mb-3 d-inline-block"></i>
+                <h4>Company-Specific Modes</h4>
+                <p class="text-low">Choose to be grilled in the style of top tech giants (Google, Amazon, Meta) or product companies (Zoho, Freshworks).</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="glass-card h-100">
+                <i class="bi bi-people text-info fs-2 mb-3 d-inline-block"></i>
+                <h4>Interviewer Personalities</h4>
+                <p class="text-low">Practice with different personality archetypes: a friendly recruiter, a strict FAANG engineer, or a startup founder.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="glass-card h-100">
+                <i class="bi bi-file-earmark-pdf text-info fs-2 mb-3 d-inline-block"></i>
+                <h4>Comprehensive Reports</h4>
+                <p class="text-low">Receive a full performance review, strengths, weaknesses, an interactive skill radar chart, and a downloadable PDF report.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- How It Works Section -->
+<div class="py-5">
+    <h2 class="text-center mb-5 display-6">How It Works</h2>
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="row align-items-center mb-4">
+                <div class="col-auto">
+                    <span class="badge bg-info text-dark fs-5 p-3 rounded-circle" style="width: 50px; height: 50px; display: inline-flex; align-items: center; justify-content: center;">1</span>
+                </div>
+                <div class="col">
+                    <h5 class="mb-1 text-white">Upload Your Resume</h5>
+                    <p class="text-low mb-0">Our parsing engine scans your skills, projects, and work experience to align questions with your profile.</p>
+                </div>
+            </div>
+            <div class="row align-items-center mb-4">
+                <div class="col-auto">
+                    <span class="badge bg-info text-dark fs-5 p-3 rounded-circle" style="width: 50px; height: 50px; display: inline-flex; align-items: center; justify-content: center;">2</span>
+                </div>
+                <div class="col">
+                    <h5 class="mb-1 text-white">Select Interview Configurations</h5>
+                    <p class="text-low mb-0">Pick your category, difficulty, number of questions, interviewer personality, and target company.</p>
+                </div>
+            </div>
+            <div class="row align-items-center mb-4">
+                <div class="col-auto">
+                    <span class="badge bg-info text-dark fs-5 p-3 rounded-circle" style="width: 50px; height: 50px; display: inline-flex; align-items: center; justify-content: center;">3</span>
+                </div>
+                <div class="col">
+                    <h5 class="mb-1 text-white">Enter the Interactive Room</h5>
+                    <p class="text-low mb-0">Answer questions via voice recording or typing. Receive real-time follow-ups from the adaptive AI engine.</p>
+                </div>
+            </div>
+            <div class="row align-items-center">
+                <div class="col-auto">
+                    <span class="badge bg-info text-dark fs-5 p-3 rounded-circle" style="width: 50px; height: 50px; display: inline-flex; align-items: center; justify-content: center;">4</span>
+                </div>
+                <div class="col">
+                    <h5 class="mb-1 text-white">Analyze and Improve</h5>
+                    <p class="text-low mb-0">Review detailed breakdowns of accuracy, clarity, and communication, and download your ReportLab PDF evaluation.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
