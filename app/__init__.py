@@ -12,11 +12,19 @@ def create_app():
     # Load configuration
     app.config.from_object('config.settings.Config')
     
-    # Ensure local upload directories exist for fallbacks
-    os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
-    os.makedirs(os.path.join(app.config['UPLOAD_FOLDER'], 'resume'), exist_ok=True)
-    os.makedirs(os.path.join(app.config['UPLOAD_FOLDER'], 'audio'), exist_ok=True)
-    os.makedirs(os.path.join(app.config['UPLOAD_FOLDER'], 'reports'), exist_ok=True)
+    # On Vercel, the filesystem is read-only except /tmp
+    # Use /tmp as fallback for upload folder on serverless environments
+    upload_folder = app.config.get('UPLOAD_FOLDER', 'static/uploads')
+    if not os.access(os.path.dirname(upload_folder) or '.', os.W_OK):
+        upload_folder = '/tmp/uploads'
+        app.config['UPLOAD_FOLDER'] = upload_folder
+
+    # Create upload directories (silently skip if filesystem is read-only)
+    for sub in ['', 'resume', 'audio', 'reports']:
+        try:
+            os.makedirs(os.path.join(upload_folder, sub), exist_ok=True)
+        except OSError:
+            pass
 
     # Initialize Database
     from app.models.database import db, User
@@ -58,12 +66,12 @@ def create_app():
                 dark_mode = set_item.dark_mode
         return dict(dark_mode=dark_mode)
 
-    # Initialize tables
-    with app.app_context():
-        try:
+    # Initialize tables (non-blocking — failure won't crash the app startup)
+    try:
+        with app.app_context():
             db.create_all()
             print("Database initialized successfully!")
-        except Exception as e:
-            print(f"Database initialization error: {e}")
+    except Exception as e:
+        print(f"Database initialization error (non-fatal): {e}")
             
     return app
