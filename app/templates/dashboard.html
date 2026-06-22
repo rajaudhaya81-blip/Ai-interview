@@ -61,12 +61,12 @@
 
         <!-- Active Session Restoration Banner -->
         {% if active_session and resume_interview %}
-        <div class="alert alert-info bg-dark-50 border-info text-white p-4 mb-4 glass-card d-flex align-items-center justify-content-between flex-wrap gap-3" data-tilt data-tilt-max="4">
-            <div style="transform: translateZ(15px);">
-                <h4 class="alert-heading text-info mb-1" style="font-family: 'Outfit', sans-serif;"><i class="bi bi-clock-history"></i> Incomplete Interview Session Found</h4>
+        <div class="glass-card border border-info text-white p-4 mb-4 d-flex align-items-center justify-content-between flex-wrap gap-3" data-tilt data-tilt-max="4" style="background: rgba(59, 130, 246, 0.1); border-color: rgba(59, 130, 246, 0.4) !important;">
+            <div>
+                <h4 class="text-info mb-1" style="font-family: 'Outfit', sans-serif;"><i class="bi bi-clock-history"></i> Incomplete Interview Session Found</h4>
                 <p class="mb-0 text-med">You were in the middle of a <strong>{{ resume_interview.difficulty }} {{ resume_interview.type }}</strong> interview (Company: {{ resume_interview.company }}). Resume where you left off!</p>
             </div>
-            <div style="transform: translateZ(25px);">
+            <div>
                 <a href="{{ url_for('interview.room', interview_id=resume_interview.id) }}" class="btn btn-primary-custom px-4 py-2"><i class="bi bi-play-fill"></i> Resume Interview</a>
                 <form action="{{ url_for('interview.abandon', interview_id=resume_interview.id) }}" method="POST" class="d-inline-block ms-2">
                     <button type="submit" class="btn btn-secondary-custom px-3 py-2 btn-sm text-danger"><i class="bi bi-trash"></i> Abandon</button>

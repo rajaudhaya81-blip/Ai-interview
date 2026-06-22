@@ -331,7 +331,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         // Update UI to show follow-up prompt
                         document.getElementById('question-text-display').innerHTML = `
                             <p class="text-secondary small">Original Question: ${document.getElementById('question-text-display').textContent}</p>
-                            <div class="alert alert-info border-info bg-dark-50 text-white">
+                            <div class="border border-info bg-dark-50 text-white p-3 rounded-3 mb-3" style="background: rgba(59, 130, 246, 0.08) !important; border-color: rgba(59, 130, 246, 0.3) !important;">
                                 <strong>Follow-up Question:</strong><br/> ${data.follow_up_question}
                             </div>
                         `;

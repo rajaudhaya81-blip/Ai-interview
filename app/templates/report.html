@@ -133,7 +133,7 @@
 
                 <!-- AI Follow-up & Evaluation -->
                 {% if qa.followup_question %}
-                    <div class="alert alert-info border-info bg-dark-50 text-white mb-3 p-3 rounded-3">
+                    <div class="border border-info bg-dark-50 text-white mb-3 p-3 rounded-3" style="background: rgba(59, 130, 246, 0.08) !important; border-color: rgba(59, 130, 246, 0.3) !important;">
                         <strong class="text-info"><i class="bi bi-reply-fill"></i> AI Follow-up:</strong> {{ qa.followup_question }}<br/>
                         <strong class="text-med">Your Follow-up Response:</strong> {{ qa.followup_response or 'No response submitted.' }}
                     </div>
