@@ -3,10 +3,14 @@
 {% block title %}Login - InterviewAI{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center align-items-center py-5">
-    <div class="col-md-6 col-lg-5">
-        <div class="glass-card">
-            <h3 class="text-center mb-4" style="font-family: 'Outfit', sans-serif;">Verify Credentials</h3>
+<div class="row justify-content-center align-items-center py-5 position-relative" style="z-index: 5;">
+    <div class="col-md-6 col-lg-5" data-aos="zoom-in" data-aos-duration="600">
+        <div class="glass-card p-5" data-tilt data-tilt-max="5" data-tilt-glare="true" data-tilt-max-glare="0.08">
+            <div class="text-center mb-4">
+                <i class="bi bi-shield-lock-fill text-primary display-5 mb-2 d-inline-block" style="filter: drop-shadow(0 0 10px var(--primary-glow));"></i>
+                <h3 style="font-family: 'Outfit', sans-serif;">Verify Credentials</h3>
+                <p class="text-low small">Secure Flask + Supabase auth tunnel</p>
+            </div>
             
             <form action="{{ url_for('auth.login') }}" method="POST">
                 <div class="mb-3">
@@ -22,6 +26,7 @@
                     <div class="input-group">
                         <span class="input-group-text bg-dark-50 border-color"><i class="bi bi-lock text-info"></i></span>
                         <input type="password" class="form-control" id="password" name="password" required placeholder="••••••••">
+                        <button class="btn btn-secondary-custom border-color px-3" type="button" id="toggle-password" style="background: rgba(0,0,0,0.25);"><i class="bi bi-eye text-med"></i></button>
                     </div>
                 </div>
                 
@@ -37,10 +42,27 @@
                 <button type="submit" class="btn btn-primary-custom w-100 py-2.5 mb-3">Login</button>
                 
                 <p class="text-center text-med mb-0 small">
-                    Don't have an account? <a href="{{ url_for('auth.register') }}" class="text-info">Sign up here</a>
+                    Don't have an account? <a href="{{ url_for('auth.register') }}" class="text-info text-decoration-none">Sign up here</a>
                 </p>
             </form>
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const toggleBtn = document.getElementById('toggle-password');
+        const passwordInput = document.getElementById('password');
+        if (toggleBtn && passwordInput) {
+            toggleBtn.addEventListener('click', () => {
+                const isPassword = passwordInput.getAttribute('type') === 'password';
+                passwordInput.setAttribute('type', isPassword ? 'text' : 'password');
+                toggleBtn.innerHTML = isPassword ? '<i class="bi bi-eye-slash text-med"></i>' : '<i class="bi bi-eye text-med"></i>';
+                if (typeof playSFX === 'function') playSFX('click');
+            });
+        }
+    });
+</script>
 {% endblock %}

@@ -3,10 +3,10 @@
 {% block title %}Upload Resume - InterviewAI{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center py-4">
+<div class="row justify-content-center py-4 position-relative" style="z-index: 5;">
     <div class="col-md-8">
         <!-- Progress Tracker -->
-        <div class="glass-card mb-4">
+        <div class="glass-card mb-4" data-tilt data-tilt-max="5">
             <div class="tracker-container">
                 <div class="tracker-line"></div>
                 <div class="tracker-line-fill" id="upload-progress-line" style="width: 12.5%;"></div>
@@ -16,7 +16,7 @@
                 <div class="tracker-step" id="step-3">3</div>
                 <div class="tracker-step" id="step-4">4</div>
             </div>
-            <div class="d-flex justify-content-between text-low small">
+            <div class="d-flex justify-content-between text-low small px-2">
                 <span>Upload Resume</span>
                 <span>Analyze Profile</span>
                 <span>Mock Interview</span>
@@ -25,9 +25,9 @@
         </div>
 
         <!-- Main Drag/Drop Zone -->
-        <div class="glass-card text-center p-5 border border-dashed border-color" id="drop-zone" style="border-style: dashed !important; transition: all 0.3s ease;">
-            <i class="bi bi-file-earmark-arrow-up text-info display-2 mb-3"></i>
-            <h3 style="font-family: 'Outfit', sans-serif;">Upload Your Professional Resume</h3>
+        <div class="glass-card text-center p-5 border border-dashed border-color" id="drop-zone" style="border-style: dashed !important; transition: all 0.3s cubic-bezier(0.1, 0.8, 0.2, 1);" data-tilt data-tilt-max="5" data-tilt-glare="true" data-tilt-max-glare="0.1">
+            <i class="bi bi-file-earmark-arrow-up text-primary display-2 mb-3" style="filter: drop-shadow(0 0 10px var(--primary-glow));"></i>
+            <h3 style="font-family: 'Outfit', sans-serif;" class="text-white">Upload Your Professional Resume</h3>
             <p class="text-low mb-4">Supported formats: PDF, DOCX (Max 10 MB)</p>
             
             <form id="upload-form" enctype="multipart/form-data">
@@ -42,7 +42,7 @@
         <!-- Analysis State / Skeletons (Hidden by default) -->
         <div class="glass-card d-none mt-4" id="analysis-zone">
             <div class="d-flex align-items-center gap-3 mb-4">
-                <div class="spinner-border text-info" role="status"></div>
+                <div class="spinner-border text-primary" role="status" style="box-shadow: 0 0 10px var(--primary-glow);"></div>
                 <div>
                     <h5 class="mb-0 text-white" id="loading-header">Uploading Resume...</h5>
                     <p class="text-low small mb-0" id="loading-subtext">Sending file securely to storage.</p>
@@ -75,7 +75,8 @@ document.addEventListener('DOMContentLoaded', () => {
         dropZone.addEventListener(eventName, (e) => {
             e.preventDefault();
             dropZone.style.borderColor = 'var(--primary)';
-            dropZone.style.background = 'rgba(102, 252, 241, 0.05)';
+            dropZone.style.background = 'rgba(139, 92, 246, 0.08)';
+            dropZone.style.boxShadow = '0 0 25px rgba(139, 92, 246, 0.2)';
         }, false);
     });
 
@@ -84,6 +85,7 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             dropZone.style.borderColor = 'var(--border-color)';
             dropZone.style.background = 'var(--surface-color)';
+            dropZone.style.boxShadow = '0 8px 32px 0 rgba(0, 0, 0, 0.35)';
         }, false);
     });
 
@@ -91,6 +93,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const dt = e.dataTransfer;
         const files = dt.files;
         if (files.length > 0) {
+            if (typeof playSFX === 'function') playSFX('click');
             handleFileUpload(files[0]);
         }
     });
@@ -117,6 +120,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Show loading state
         dropZone.classList.add('d-none');
         analysisZone.classList.remove('d-none');
+        if (typeof playSFX === 'function') playSFX('start');
         
         const formData = new FormData();
         formData.append('resume', file);
@@ -132,6 +136,7 @@ document.addEventListener('DOMContentLoaded', () => {
             step2.classList.add('active');
             document.getElementById('loading-header').textContent = 'AI Profile Analysis in Progress...';
             document.getElementById('loading-subtext').textContent = 'Extracting skills, projects, and computing ATS compatibility.';
+            if (typeof playSFX === 'function') playSFX('hover');
             
             return response.json();
         })
@@ -140,6 +145,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Navigate to intelligence page
                 progressLine.style.width = '62.5%';
                 step3.classList.add('active');
+                if (typeof playSFX === 'function') playSFX('achievement');
                 setTimeout(() => {
                     window.location.href = '/intel';
                 }, 1000);

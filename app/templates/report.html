@@ -4,9 +4,9 @@
 
 {% block content %}
 <!-- Header details -->
-<div class="row align-items-center mb-4">
+<div class="row align-items-center mb-4 position-relative" style="z-index: 5;">
     <div class="col-md-8">
-        <h2 style="font-family: 'Outfit', sans-serif;"><i class="bi bi-file-earmark-bar-graph text-info"></i> Evaluation Report</h2>
+        <h2 style="font-family: 'Outfit', sans-serif;"><i class="bi bi-file-earmark-bar-graph-fill text-primary" style="filter: drop-shadow(0 0 10px var(--primary-glow));"></i> Evaluation Report</h2>
         <p class="text-low">Detailed analysis of your practice interview.</p>
     </div>
     <div class="col-md-4 text-md-end">
@@ -23,22 +23,50 @@
 </div>
 
 <!-- Score cards & Radar Chart -->
-<div class="row g-4 mb-4">
-    <!-- Left Column (General Metrics) -->
-    <div class="col-md-4">
-        <div class="glass-card text-center h-100 py-4 d-flex flex-column justify-content-center">
-            <div class="display-3 fw-bold text-info mb-1">{{ report.overall_score }}%</div>
-            <div class="text-low small mb-4">Overall Performance Score</div>
+<div class="row g-4 mb-4 position-relative" style="z-index: 5;">
+    <!-- Left Column (General Metrics with 3D Ring) -->
+    <div class="col-md-4" data-aos="fade-up" data-aos-delay="50">
+        <div class="glass-card text-center h-100 py-4 d-flex flex-column align-items-center justify-content-center" data-tilt data-tilt-max="10">
+            <!-- Massive 3D Score Ring -->
+            <div class="position-relative d-inline-block mb-3" style="width: 120px; height: 120px;">
+                <svg class="circular-chart" viewBox="0 0 36 36" style="width: 100%; height: 100%; transform: rotate(-90deg);">
+                    <path class="circle-bg"
+                        d="M18 2.0845
+                            a 15.9155 15.9155 0 0 1 0 31.831
+                            a 15.9155 15.9155 0 0 1 0 -31.831"
+                        fill="none"
+                        stroke="rgba(255,255,255,0.05)"
+                        stroke-width="3"
+                    />
+                    <path class="circle-fill"
+                        style="--dashoffset: {{ 100 - report.overall_score }};"
+                        stroke-dasharray="100"
+                        stroke-dashoffset="100"
+                        d="M18 2.0845
+                            a 15.9155 15.9155 0 0 1 0 31.831
+                            a 15.9155 15.9155 0 0 1 0 -31.831"
+                        fill="none"
+                        stroke="#8b5cf6"
+                        stroke-width="3"
+                        stroke-linecap="round"
+                    />
+                </svg>
+                <div class="position-absolute top-50 start-50 translate-middle text-white fw-bold fs-3" style="font-family: 'Outfit', sans-serif;">
+                    <span class="animate-counter" data-target="{{ report.overall_score }}">{{ report.overall_score }}</span>%
+                </div>
+            </div>
             
-            <div class="display-4 fw-bold text-success mb-1">{{ report.readiness_score }}%</div>
+            <div class="text-white fw-bold mb-3">Overall Performance Score</div>
+            
+            <div class="display-6 fw-bold text-success mb-1"><span class="animate-counter" data-target="{{ report.readiness_score }}">{{ report.readiness_score }}</span>%</div>
             <div class="text-low small">Job Readiness Estimate</div>
         </div>
     </div>
     
     <!-- Middle Column (Radar Chart) -->
-    <div class="col-md-4">
-        <div class="glass-card h-100">
-            <h5 class="mb-3 text-center" style="font-family: 'Outfit', sans-serif;"><i class="bi bi-graph-up-arrow text-info"></i> Skill Heatmap</h5>
+    <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
+        <div class="glass-card h-100" data-tilt data-tilt-max="5">
+            <h5 class="mb-3 text-center" style="font-family: 'Outfit', sans-serif;"><i class="bi bi-graph-up-arrow text-primary"></i> Skill Heatmap</h5>
             <div style="height: 220px; position: relative;">
                 <canvas id="chart-skill-radar"></canvas>
             </div>
@@ -46,10 +74,10 @@
     </div>
 
     <!-- Right Column (Strengths/Weaknesses) -->
-    <div class="col-md-4">
-        <div class="glass-card h-100">
-            <h5 class="mb-3 text-info" style="font-family: 'Outfit', sans-serif;"><i class="bi bi-hand-thumbs-up-fill"></i> Highlights</h5>
-            <ul class="text-low small ps-3">
+    <div class="col-md-4" data-aos="fade-up" data-aos-delay="150">
+        <div class="glass-card h-100" data-tilt data-tilt-max="8">
+            <h5 class="mb-3 text-primary" style="font-family: 'Outfit', sans-serif;"><i class="bi bi-hand-thumbs-up-fill"></i> Highlights</h5>
+            <ul class="text-low small ps-3" style="line-height: 1.7;">
                 {% for strength in strengths %}
                     <li class="mb-2">{{ strength }}</li>
                 {% endfor %}
@@ -58,18 +86,18 @@
     </div>
 </div>
 
-<!-- Recommendations & Learning Path -->
-<div class="row g-4 mb-4">
-    <div class="col-md-6">
-        <div class="glass-card h-100">
-            <h5 class="mb-3 text-white" style="font-family: 'Outfit', sans-serif;"><i class="bi bi-award-fill text-info"></i> Committee Placement Suggestion</h5>
-            <p class="text-med">{{ report.recommendations }}</p>
+<!-- Recommendations & Learning Plan -->
+<div class="row g-4 mb-4 position-relative" style="z-index: 5;">
+    <div class="col-md-6" data-aos="fade-up" data-aos-delay="50">
+        <div class="glass-card h-100" data-tilt data-tilt-max="4">
+            <h5 class="mb-3 text-white" style="font-family: 'Outfit', sans-serif;"><i class="bi bi-award-fill text-primary"></i> Committee Placement Suggestion</h5>
+            <p class="text-med" style="line-height: 1.6;">{{ report.recommendations }}</p>
         </div>
     </div>
-    <div class="col-md-6">
-        <div class="glass-card h-100">
-            <h5 class="mb-3 text-white" style="font-family: 'Outfit', sans-serif;"><i class="bi bi-journals text-info"></i> Actionable Learning Plan</h5>
-            <div class="text-low small markdown-content">
+    <div class="col-md-6" data-aos="fade-up" data-aos-delay="100">
+        <div class="glass-card h-100" data-tilt data-tilt-max="4">
+            <h5 class="mb-3 text-white" style="font-family: 'Outfit', sans-serif;"><i class="bi bi-journals text-primary"></i> Actionable Learning Plan</h5>
+            <div class="text-low small markdown-content" style="line-height: 1.6;">
                 {{ report.learning_path | safe }}
             </div>
         </div>
@@ -77,16 +105,16 @@
 </div>
 
 <!-- Question Analysis & Audio Playback -->
-<div class="glass-card mb-4">
-    <h4 class="mb-4" style="font-family: 'Outfit', sans-serif;"><i class="bi bi-chat-right-text-fill text-info"></i> Detailed Question-by-Question Analysis</h4>
+<div class="glass-card mb-4 position-relative" style="z-index: 5;" data-tilt data-tilt-max="1">
+    <h4 class="mb-4 text-white" style="font-family: 'Outfit', sans-serif;"><i class="bi bi-chat-right-text-fill text-primary"></i> Detailed Question-by-Question Analysis</h4>
     
     <div class="d-flex flex-column gap-4">
         {% for qa in qa_data %}
-            <div class="p-3 bg-dark-50 rounded border border-color">
+            <div class="p-4 bg-dark-50 rounded-3 border border-color">
                 <!-- Question & Score Header -->
                 <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-3 border-bottom border-color pb-2">
                     <h6 class="text-white fw-bold mb-0">Question {{ loop.index }}: {{ qa.question_text }}</h6>
-                    <span class="badge bg-violet">Score: {{ qa.score }}/100</span>
+                    <span class="badge bg-violet px-3 py-1.5" style="box-shadow: 0 0 10px var(--primary-glow);">Score: {{ qa.score }}/100</span>
                 </div>
                 
                 <!-- Candidate Answer -->
@@ -97,15 +125,15 @@
 
                 <!-- Voice Replay Option -->
                 {% if qa.audio_url %}
-                    <div class="mb-3 p-2 bg-dark rounded d-inline-flex align-items-center gap-2">
-                        <span class="small text-low"><i class="bi bi-volume-up-fill text-info"></i> Playback Recording:</span>
+                    <div class="mb-3 p-3 bg-dark rounded-3 d-inline-flex align-items-center gap-2 border border-color">
+                        <span class="small text-low"><i class="bi bi-volume-up-fill text-primary"></i> Playback Recording:</span>
                         <audio src="{{ qa.audio_url }}" controls style="height: 30px; width: 220px;"></audio>
                     </div>
                 {% endif %}
 
                 <!-- AI Follow-up & Evaluation -->
                 {% if qa.followup_question %}
-                    <div class="alert alert-info border-info bg-dark-50 text-white mb-3 p-3">
+                    <div class="alert alert-info border-info bg-dark-50 text-white mb-3 p-3 rounded-3">
                         <strong class="text-info"><i class="bi bi-reply-fill"></i> AI Follow-up:</strong> {{ qa.followup_question }}<br/>
                         <strong class="text-med">Your Follow-up Response:</strong> {{ qa.followup_response or 'No response submitted.' }}
                     </div>
@@ -113,13 +141,13 @@
 
                 <!-- Metrics breakdown -->
                 <div class="row g-2 mb-3 text-center text-low small">
-                    <div class="col-sm-4 bg-dark py-1.5 rounded">Accuracy: <strong class="text-info">{{ qa.accuracy }}%</strong></div>
-                    <div class="col-sm-4 bg-dark py-1.5 rounded">Communication: <strong class="text-info">{{ qa.communication }}%</strong></div>
-                    <div class="col-sm-4 bg-dark py-1.5 rounded">Confidence: <strong class="text-info">{{ qa.confidence }}%</strong></div>
+                    <div class="col-sm-4 bg-dark py-2 rounded-3 border border-color">Accuracy: <strong class="text-info">{{ qa.accuracy }}%</strong></div>
+                    <div class="col-sm-4 bg-dark py-2 rounded-3 border border-color">Communication: <strong class="text-info">{{ qa.communication }}%</strong></div>
+                    <div class="col-sm-4 bg-dark py-2 rounded-3 border border-color">Confidence: <strong class="text-info">{{ qa.confidence }}%</strong></div>
                 </div>
 
                 <!-- Feedback & Tips -->
-                <div class="p-3 rounded style-box text-low" style="background: rgba(138, 43, 226, 0.05); border-left: 4px solid var(--violet);">
+                <div class="p-3 rounded-3 text-low" style="background: rgba(139, 92, 246, 0.04); border-left: 4px solid var(--primary);">
                     <strong>Evaluator Feedback:</strong><br/>
                     <p class="small mb-2 mt-1">{{ qa.feedback }}</p>
                     <strong>How to Improve:</strong><br/>
@@ -134,6 +162,21 @@
 {% block scripts %}
 <script>
 document.addEventListener('DOMContentLoaded', () => {
+    // Run GSAP Counter animations
+    const counters = document.querySelectorAll('.animate-counter');
+    counters.forEach(c => {
+        const target = parseFloat(c.dataset.target);
+        const obj = { val: 0 };
+        gsap.to(obj, {
+            val: target,
+            duration: 1.5,
+            ease: 'power3.out',
+            onUpdate: () => {
+                c.textContent = Math.round(obj.val);
+            }
+        });
+    });
+
     const radarCtx = document.getElementById('chart-skill-radar').getContext('2d');
     
     // Skills loading from template variables
@@ -147,10 +190,12 @@ document.addEventListener('DOMContentLoaded', () => {
             datasets: [{
                 label: 'Proficiency',
                 data: skillScores,
-                backgroundColor: 'rgba(102, 252, 241, 0.15)',
-                borderColor: '#66fcf1',
+                backgroundColor: 'rgba(139, 92, 246, 0.12)',
+                borderColor: '#8b5cf6',
                 borderWidth: 2,
-                pointBackgroundColor: '#66fcf1'
+                pointBackgroundColor: '#00d4ff',
+                pointBorderColor: '#fff',
+                pointBorderWidth: 1.5
             }]
         },
         options: {
@@ -158,11 +203,11 @@ document.addEventListener('DOMContentLoaded', () => {
             maintainAspectRatio: false,
             scales: {
                 r: {
-                    angleLines: { color: 'rgba(255, 255, 255, 0.08)' },
-                    grid: { color: 'rgba(255, 255, 255, 0.08)' },
-                    pointLabels: { color: '#c5c6c7', font: { size: 9, family: 'Inter' } },
+                    angleLines: { color: 'rgba(255, 255, 255, 0.05)' },
+                    grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                    pointLabels: { color: '#9ca3af', font: { size: 9, family: 'Inter' } },
                     ticks: {
-                        color: '#7a8288',
+                        color: '#6b7280',
                         backdropColor: 'transparent',
                         showLabelBackdrop: false
                     },

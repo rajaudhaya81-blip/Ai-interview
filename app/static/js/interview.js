@@ -1,4 +1,5 @@
 // Interview Room Orchestrator - InterviewAI
+// Upgraded with stateful Three.js cyber-hologram transitions and neon circular timers
 
 let mediaRecorder;
 let audioChunks = [];
@@ -17,8 +18,9 @@ let hesitationPauses = 0;
 let inFollowUpMode = false;
 
 document.addEventListener('DOMContentLoaded', () => {
-    const timerElement = document.getElementById('timer');
-    const progressBar = document.getElementById('progress-bar');
+    const timerElement = document.getElementById('timer-text');
+    const timerRing = document.getElementById('timer-ring');
+    const timerContainer = document.getElementById('timer');
     const startRecordBtn = document.getElementById('btn-record-start');
     const stopRecordBtn = document.getElementById('btn-record-stop');
     const submitBtn = document.getElementById('btn-submit');
@@ -29,9 +31,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const audioPreview = document.getElementById('audio-preview');
     const fullscreenBtn = document.getElementById('btn-fullscreen');
     
-    let timeRemaining = parseInt(timerElement.dataset.timeRemaining);
-    const totalTime = parseInt(timerElement.dataset.timeLimit) * 60;
-    const interviewId = timerElement.dataset.interviewId;
+    let timeRemaining = parseInt(timerContainer.dataset.timeRemaining);
+    const totalTime = parseInt(timerContainer.dataset.timeLimit) * 60;
+    const interviewId = timerContainer.dataset.interviewId;
 
     // --- COUNTDOWN TIMER ---
     const timerInterval = setInterval(() => {
@@ -46,18 +48,29 @@ document.addEventListener('DOMContentLoaded', () => {
         // Format time
         const mins = Math.floor(timeRemaining / 60);
         const secs = timeRemaining % 60;
-        timerElement.textContent = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-        
-        // Progress bar percentage
-        if (totalTime > 0) {
-            const progressPct = ((totalTime - timeRemaining) / totalTime) * 100;
-            progressBar.style.width = `${progressPct}%`;
+        if (timerElement) {
+            timerElement.textContent = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
         }
+        
+        // Update SVG timer ring offset
+        if (totalTime > 0 && timerRing) {
+            const pct = timeRemaining / totalTime;
+            const offset = 100 - (pct * 100);
+            timerRing.style.strokeDashoffset = offset;
 
-        // Visual warning when under 2 minutes
-        if (timeRemaining < 120) {
-            timerElement.classList.add('text-danger');
-            timerElement.style.animation = 'bounce 1s infinite';
+            // Shift colors depending on time limits
+            if (pct < 0.2) {
+                timerRing.setAttribute('stroke', '#ef4444'); // Danger red
+                timerRing.style.filter = 'drop-shadow(0 0 8px rgba(239, 68, 68, 0.6))';
+                if (timerElement) timerElement.className = "position-absolute top-50 start-50 translate-middle text-danger fw-bold";
+            } else if (pct < 0.5) {
+                timerRing.setAttribute('stroke', '#f59e0b'); // Warning amber
+                timerRing.style.filter = 'drop-shadow(0 0 8px rgba(245, 158, 11, 0.5))';
+                if (timerElement) timerElement.className = "position-absolute top-50 start-50 translate-middle text-warning fw-bold";
+            } else {
+                timerRing.setAttribute('stroke', '#10b981'); // Success green
+                timerRing.style.filter = 'drop-shadow(0 0 8px rgba(16, 185, 129, 0.4))';
+            }
         }
     }, 1000);
 
@@ -76,18 +89,20 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- WEBCAM SIMULATION & STREAMING ---
+    // --- WEBCAM STREAMING ---
     const video = document.getElementById('webcam-preview');
     const faceOverlay = document.getElementById('face-overlay');
     if (video) {
         navigator.mediaDevices.getUserMedia({ video: true, audio: false })
             .then(stream => {
                 video.srcObject = stream;
-                if (faceOverlay) faceOverlay.textContent = "Eye Contact & Attention Monitored (Simulated)";
+                if (faceOverlay) faceOverlay.textContent = "Webcam active (Muted)";
             })
             .catch(err => {
-                console.log("Webcam access denied or unavailable: ", err);
+                console.log("Webcam access denied: ", err);
                 if (faceOverlay) faceOverlay.innerHTML = "<span class='text-danger'>Camera Blocked (Voice-only active)</span>";
+                const badge = document.getElementById('attention-badge');
+                if (badge) badge.classList.replace('bg-success', 'bg-secondary');
             });
     }
 
@@ -193,7 +208,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 startRecordBtn.classList.add('d-none');
                 stopRecordBtn.classList.remove('d-none');
                 document.getElementById('recording-indicator').classList.remove('d-none');
-                document.getElementById('avatar-orb').classList.add('speaking');
+
+                // Trigger 3D Hologram Listening visual state
+                if (typeof window.setHologramState === 'function') {
+                    window.setHologramState('listening');
+                }
             } catch (err) {
                 alert("Microphone permission denied. Please allow microphone access to practice speaking.");
             }
@@ -213,7 +232,11 @@ document.addEventListener('DOMContentLoaded', () => {
             startRecordBtn.classList.remove('d-none');
             stopRecordBtn.classList.add('d-none');
             document.getElementById('recording-indicator').classList.add('d-none');
-            document.getElementById('avatar-orb').classList.remove('speaking');
+
+            // Trigger 3D Hologram Thinking visual state
+            if (typeof window.setHologramState === 'function') {
+                window.setHologramState('thinking');
+            }
         });
     }
 
@@ -230,6 +253,11 @@ document.addEventListener('DOMContentLoaded', () => {
             submitBtn.disabled = true;
             submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Evaluating...';
             document.getElementById('ai-typing-indicator').classList.remove('d-none');
+
+            // Trigger 3D Hologram Evaluating visual state
+            if (typeof window.setHologramState === 'function') {
+                window.setHologramState('evaluating');
+            }
 
             // 1. Upload audio if available
             let audioUrl = null;
@@ -296,6 +324,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (data.status === 'follow_up') {
                         // Enter follow-up state
                         inFollowUpMode = true;
+                        if (typeof window.setHologramState === 'function') {
+                            window.setHologramState('idle'); // Reset back to idle/breathing
+                        }
                         
                         // Update UI to show follow-up prompt
                         document.getElementById('question-text-display').innerHTML = `
@@ -314,6 +345,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         // Move to next question by reloading
                         window.location.reload();
                     } else if (data.status === 'completed') {
+                        if (typeof playSFX === 'function') playSFX('achievement');
                         // Redirect to report
                         window.location.href = data.redirect_url;
                     }
@@ -321,12 +353,18 @@ document.addEventListener('DOMContentLoaded', () => {
                     alert(`Error: ${data.message}`);
                     submitBtn.disabled = false;
                     submitBtn.textContent = 'Submit Answer';
+                    if (typeof window.setHologramState === 'function') {
+                        window.setHologramState('idle');
+                    }
                 }
             } catch (err) {
                 console.log(err);
                 alert("An error occurred during submission.");
                 submitBtn.disabled = false;
                 submitBtn.textContent = 'Submit Answer';
+                if (typeof window.setHologramState === 'function') {
+                    window.setHologramState('idle');
+                }
             } finally {
                 document.getElementById('ai-typing-indicator').classList.add('d-none');
             }
@@ -342,7 +380,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Pause session
                 clearInterval(timerInterval);
                 pauseBtn.classList.add('paused');
-                pauseBtn.innerHTML = '<i class="bi bi-play-fill"></i> Resume Interview';
+                pauseBtn.innerHTML = '<i class="bi bi-play-fill"></i> Resume';
                 
                 await fetch('/interview/pause', {
                     method: 'POST',

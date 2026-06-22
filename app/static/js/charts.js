@@ -15,13 +15,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 datasets: [{
                     label: 'Interview Score (%)',
                     data: scores,
-                    borderColor: '#66fcf1',
-                    backgroundColor: 'rgba(102, 252, 241, 0.1)',
+                    borderColor: '#8b5cf6',
+                    backgroundColor: 'rgba(139, 92, 246, 0.15)',
                     borderWidth: 3,
                     fill: true,
                     tension: 0.3,
-                    pointBackgroundColor: '#66fcf1',
-                    pointHoverRadius: 8
+                    pointBackgroundColor: '#00d4ff',
+                    pointBorderColor: '#8b5cf6',
+                    pointHoverRadius: 8,
+                    pointHoverBackgroundColor: '#00d4ff',
+                    pointHoverBorderColor: '#ffffff'
                 }]
             },
             options: {
@@ -31,12 +34,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     y: {
                         beginAtZero: true,
                         max: 100,
-                        grid: { color: 'rgba(255, 255, 255, 0.05)' },
-                        ticks: { color: '#c5c6c7' }
+                        grid: { color: 'rgba(255, 255, 255, 0.08)' },
+                        ticks: { color: '#cbd5e1' }
                     },
                     x: {
-                        grid: { color: 'rgba(255, 255, 255, 0.05)' },
-                        ticks: { color: '#c5c6c7' }
+                        grid: { color: 'rgba(255, 255, 255, 0.08)' },
+                        ticks: { color: '#cbd5e1' }
                     }
                 },
                 plugins: {
@@ -60,15 +63,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 datasets: [{
                     data: data,
                     backgroundColor: [
-                        '#66fcf1',
-                        '#8a2be2',
-                        '#45a29e',
-                        '#2ecc71',
-                        '#f1c40f',
-                        '#ff4c4c'
+                        '#8b5cf6', // Violet
+                        '#3b82f6', // Blue
+                        '#00d4ff', // Cyan
+                        '#ec4899', // Pink
+                        '#10b981', // Emerald
+                        '#f59e0b'  // Amber
                     ],
-                    borderWidth: 1,
-                    borderColor: '#0b0c10'
+                    borderWidth: 2,
+                    borderColor: '#030712'
                 }]
             },
             options: {
@@ -77,7 +80,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 plugins: {
                     legend: {
                         position: 'right',
-                        labels: { color: '#c5c6c7', font: { family: 'Inter' } }
+                        labels: { color: '#cbd5e1', font: { family: 'Inter', size: 11 } }
                     }
                 }
             }
@@ -98,10 +101,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 datasets: [{
                     label: 'Skill Proficiency',
                     data: data,
-                    backgroundColor: 'rgba(138, 43, 226, 0.2)',
-                    borderColor: '#8a2be2',
+                    backgroundColor: 'rgba(139, 92, 246, 0.2)',
+                    borderColor: '#8b5cf6',
                     borderWidth: 2,
-                    pointBackgroundColor: '#8a2be2'
+                    pointBackgroundColor: '#00d4ff',
+                    pointBorderColor: '#8b5cf6'
                 }]
             },
             options: {
@@ -111,9 +115,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     r: {
                         angleLines: { color: 'rgba(255, 255, 255, 0.08)' },
                         grid: { color: 'rgba(255, 255, 255, 0.08)' },
-                        pointLabels: { color: '#c5c6c7', font: { size: 11, family: 'Inter', weight: 'bold' } },
+                        pointLabels: { color: '#cbd5e1', font: { size: 11, family: 'Inter', weight: 'bold' } },
                         ticks: {
-                            color: '#7a8288',
+                            color: '#9ca3af',
                             backdropColor: 'transparent',
                             showLabelBackdrop: false
                         },

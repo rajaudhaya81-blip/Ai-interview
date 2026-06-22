@@ -3,11 +3,11 @@
 {% block title %}Setup Simulator - InterviewAI{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center py-4">
-    <div class="col-lg-8">
-        <div class="glass-card">
-            <h2 class="mb-4 text-center" style="font-family: 'Outfit', sans-serif;">
-                <i class="bi bi-sliders text-info"></i> Configure Your AI Interview
+<div class="row justify-content-center py-4 position-relative" style="z-index: 5;">
+    <div class="col-lg-8" data-aos="zoom-in" data-aos-duration="700">
+        <div class="glass-card p-5" data-tilt data-tilt-max="4" data-tilt-glare="true" data-tilt-max-glare="0.08">
+            <h2 class="mb-4 text-center text-white" style="font-family: 'Outfit', sans-serif;">
+                <i class="bi bi-sliders text-primary" style="filter: drop-shadow(0 0 10px var(--primary-glow));"></i> Configure Your AI Interview
             </h2>
             
             <form action="{{ url_for('interview.setup') }}" method="POST">
@@ -92,14 +92,14 @@
                 </div>
 
                 <!-- Personality Description Helper Card -->
-                <div class="p-3 bg-dark-50 rounded border border-color mb-4" id="personality-card" style="transition: all 0.3s ease;">
-                    <div class="fw-bold text-white mb-1"><i class="bi bi-info-circle text-info"></i> Interviewer Archetype Tone:</div>
-                    <p class="text-low small mb-0" id="personality-description">
+                <div class="p-4 bg-dark-50 rounded-3 border border-color mb-4" id="personality-card" style="transition: all 0.3s cubic-bezier(0.1, 0.8, 0.2, 1); transform: translateZ(10px);">
+                    <div class="fw-bold text-white mb-2"><i class="bi bi-info-circle text-primary"></i> Interviewer Archetype Tone:</div>
+                    <p class="text-low small mb-0" id="personality-description" style="line-height: 1.6;">
                         A warm, welcoming, and encouraging HR recruiter. Focuses on communication, basic understanding, and soft skills. Tries to make the candidate comfortable and uses a positive, conversational tone.
                     </p>
                 </div>
 
-                <div class="text-center py-2">
+                <div class="text-center py-2" style="transform: translateZ(20px);">
                     <button type="submit" class="btn btn-primary-custom px-5 py-3 fs-6">
                         <i class="bi bi-play-circle-fill me-2"></i> Generate & Enter Interview Room
                     </button>
@@ -121,6 +121,7 @@ const descriptions = {
 };
 
 function updatePersonalityDescription(val) {
+    if (typeof playSFX === 'function') playSFX('hover');
     document.getElementById('personality-description').textContent = descriptions[val] || descriptions["Friendly Recruiter"];
 }
 </script>

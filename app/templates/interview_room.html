@@ -3,17 +3,17 @@
 {% block title %}Interview Room - InterviewAI{% endblock %}
 
 {% block head %}
-<!-- Custom bindings for browser variables -->
+<!-- Custom styles for Three.js hologram and circular timer -->
 <style>
     #paused-overlay {
         position: fixed;
         top: 0; left: 0; width: 100vw; height: 100vh;
-        background: rgba(11, 12, 16, 0.9);
+        background: rgba(3, 7, 18, 0.95);
         z-index: 2000;
         display: flex;
         align-items: center;
         justify-content: center;
-        backdrop-filter: blur(15px);
+        backdrop-filter: blur(20px);
     }
 </style>
 {% endblock %}
@@ -21,70 +21,93 @@
 {% block content %}
 <!-- Pause Overlay (Hidden by default) -->
 <div id="paused-overlay" class="d-none">
-    <div class="glass-card text-center p-5 max-width-md">
-        <h2 class="text-info mb-3" style="font-family: 'Outfit', sans-serif;"><i class="bi bi-pause-circle-fill"></i> Interview Paused</h2>
-        <p class="text-med mb-4">Your interview state is saved. You can resume at any time.</p>
+    <div class="glass-card text-center p-5 max-width-md" data-tilt data-tilt-max="5">
+        <h2 class="text-info mb-3" style="font-family: 'Outfit', sans-serif;"><i class="bi bi-pause-circle-fill" style="filter: drop-shadow(0 0 10px var(--accent-glow));"></i> Interview Paused</h2>
+        <p class="text-med mb-4">Your interview state is saved securely. You can resume at any time.</p>
         <button id="paused-resume-btn" onclick="window.location.reload()" class="btn btn-primary-custom px-4 py-2"><i class="bi bi-play-fill"></i> Resume Interview</button>
     </div>
 </div>
 
 <!-- Main Grid -->
-<div class="row">
-    <!-- Left Column (Interviewer Panel) -->
-    <div class="col-lg-5 mb-4">
-        <div class="glass-card text-center h-100 d-flex flex-column justify-content-between py-4">
+<div class="row position-relative" style="z-index: 5;">
+    <!-- Left Column (Interviewer Panel & Webcam feed) -->
+    <div class="col-lg-5 mb-4" data-aos="fade-right">
+        <div class="glass-card text-center h-100 d-flex flex-column justify-content-between py-4" data-tilt data-tilt-max="3">
             <div>
-                <span class="badge bg-dark border border-info text-info mb-2">{{ interview.personality }}</span>
+                <span class="badge bg-dark border border-primary text-primary mb-2" style="box-shadow: 0 0 10px var(--primary-glow);">{{ interview.personality }}</span>
                 <h4 class="mb-0 text-white" style="font-family: 'Outfit', sans-serif;">{{ interview.company }} AI Simulator</h4>
             </div>
             
-            <!-- Animated Orb representing AI -->
-            <div class="my-5">
-                <div class="avatar-pulse" id="avatar-orb">
-                    <div class="glass-card" style="border-radius: 50%; padding: 25px; background: rgba(0,0,0,0.5);">
-                        <i class="bi bi-robot text-info" style="font-size: 50px;"></i>
-                    </div>
-                </div>
-                <!-- Typing / processing indicator -->
-                <div class="mt-4 d-none" id="ai-typing-indicator">
+            <!-- Animated Stateful 3D Cyber-Hologram Canvas -->
+            <div class="my-4 position-relative" style="height: 180px;">
+                <canvas id="avatar-canvas" class="w-100 h-100" style="outline: none;"></canvas>
+                <!-- Typing / evaluation indicator -->
+                <div class="position-absolute bottom-0 start-50 translate-middle-x mt-2 d-none" id="ai-typing-indicator">
                     <div class="typing-indicator">
                         <div class="typing-dot"></div>
                         <div class="typing-dot"></div>
                         <div class="typing-dot"></div>
                     </div>
-                    <span class="text-low small ms-2">Evaluating response...</span>
+                    <span class="text-info small ms-2" style="font-size: 11px;">Evaluating response...</span>
                 </div>
             </div>
 
             <!-- Current Question Box -->
-            <div class="p-3 bg-dark-50 rounded border border-color mx-2">
-                <div class="text-low small mb-2 text-start"><i class="bi bi-chat-left-quote text-info"></i> Interviewer Question:</div>
-                <h5 class="text-white text-start mb-0" id="question-text-display" style="line-height: 1.5; font-weight: 500;">
+            <div class="p-3 bg-dark-50 rounded-3 border border-color mx-2 text-start" style="transform: translateZ(10px);">
+                <div class="text-low small mb-2"><i class="bi bi-chat-left-quote-fill text-primary"></i> Interviewer Question:</div>
+                <h5 class="text-white mb-0" id="question-text-display" style="line-height: 1.5; font-weight: 500;">
                     {{ questions[session.current_question_index].question_text }}
                 </h5>
             </div>
         </div>
     </div>
 
-    <!-- Right Column (Candidate Console) -->
-    <div class="col-lg-7 mb-4">
-        <div class="glass-card h-100 d-flex flex-column justify-content-between">
-            <!-- Header Metrics -->
+    <!-- Right Column (Candidate Workspace & Circular Neon Timer) -->
+    <div class="col-lg-7 mb-4" data-aos="fade-left">
+        <div class="glass-card h-100 d-flex flex-column justify-content-between" data-tilt data-tilt-max="2">
+            <!-- Header Metrics & Circular Neon Timer -->
             <div class="border-bottom border-color pb-3 mb-3">
-                <div class="d-flex justify-content-between align-items-center mb-2">
-                    <span class="text-low">Question <span class="text-info fw-bold">{{ session.current_question_index + 1 }}</span> of {{ interview.question_count }}</span>
-                    <!-- Digital Timer -->
-                    <span id="timer" class="fw-bold fs-5 text-white" 
-                          data-time-remaining="{{ session.remaining_time }}" 
-                          data-time-limit="{{ interview.time_limit }}"
-                          data-interview-id="{{ interview.id }}">
-                        --:--
-                    </span>
-                </div>
-                
-                <!-- Progress Bar -->
-                <div class="progress" style="height: 6px; background: rgba(255,255,255,0.05);">
-                    <div class="progress-bar bg-info" id="progress-bar" style="width: 0%;"></div>
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <span class="text-low">Question <span class="text-primary fw-bold">{{ session.current_question_index + 1 }}</span> of {{ interview.question_count }}</span>
+                        <!-- Progress Bar -->
+                        <div class="progress mt-2" style="height: 5px; width: 140px; background: rgba(255,255,255,0.04);">
+                            <div class="progress-bar bg-primary" id="progress-bar" style="width: {{ ((session.current_question_index) / interview.question_count) * 100 }}%;"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Circular Neon countdown timer -->
+                    <div class="position-relative" style="width: 65px; height: 65px;" id="timer" 
+                         data-time-remaining="{{ session.remaining_time }}" 
+                         data-time-limit="{{ interview.time_limit }}"
+                         data-interview-id="{{ interview.id }}">
+                        <svg class="circular-chart" viewBox="0 0 36 36" style="width: 100%; height: 100%; transform: rotate(-90deg);">
+                            <path class="circle-bg"
+                                d="M18 2.0845
+                                    a 15.9155 15.9155 0 0 1 0 31.831
+                                    a 15.9155 15.9155 0 0 1 0 -31.831"
+                                fill="none"
+                                stroke="rgba(255,255,255,0.05)"
+                                stroke-width="3"
+                            />
+                            <path class="circle-fill"
+                                id="timer-ring"
+                                stroke-dasharray="100"
+                                stroke-dashoffset="0"
+                                d="M18 2.0845
+                                    a 15.9155 15.9155 0 0 1 0 31.831
+                                    a 15.9155 15.9155 0 0 1 0 -31.831"
+                                fill="none"
+                                stroke="#10b981"
+                                stroke-width="3.2"
+                                stroke-linecap="round"
+                                style="transition: stroke-dashoffset 1s linear, stroke 1.3s ease;"
+                            />
+                        </svg>
+                        <div class="position-absolute top-50 start-50 translate-middle text-white fw-bold" style="font-size: 11px;" id="timer-text">
+                            --:--
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -92,33 +115,33 @@
             <div class="flex-grow-1 my-3">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <span id="input-label-mode" class="fw-bold text-white">Provide your response:</span>
-                    <!-- Switch mode -->
+                    <!-- Switch mode button group -->
                     <div class="btn-group btn-group-sm" role="group">
-                        <button type="button" class="btn btn-primary-custom py-1" id="btn-mode-text">Text Input</button>
-                        <button type="button" class="btn btn-secondary-custom py-1" id="btn-mode-voice">Voice Input</button>
+                        <button type="button" class="btn btn-primary-custom py-1 px-3" id="btn-mode-text">Text Mode</button>
+                        <button type="button" class="btn btn-secondary-custom py-1 px-3" id="btn-mode-voice">Voice Mode</button>
                     </div>
                 </div>
 
                 <!-- Text Area Input -->
-                <textarea class="glass-input h-100" id="text-answer" rows="10" placeholder="Type your response here or switch to voice input to speak..."></textarea>
+                <textarea class="glass-input h-100" id="text-answer" rows="9" placeholder="Type your response here or switch to voice input to speak..."></textarea>
                 
                 <!-- Voice Recorder Interface (Hidden by default) -->
-                <div class="d-none text-center py-4 bg-dark-50 rounded border border-color mt-3" id="voice-answer-container">
+                <div class="d-none text-center py-4 bg-dark-50 rounded-3 border border-color mt-3" id="voice-answer-container" style="transform: translateZ(10px);">
                     <div id="recording-indicator" class="d-none mb-3">
                         <span class="spinner-grow spinner-grow-sm text-danger" role="status"></span>
-                        <span class="text-danger fw-bold ms-1">Recording Microphone...</span>
+                        <span class="text-danger fw-bold ms-1" style="font-size: 13px;">Microphone active...</span>
                     </div>
                     
                     <div class="d-flex justify-content-center gap-3">
-                        <button type="button" class="btn btn-violet rounded-circle p-3" id="btn-record-start" style="width: 70px; height: 70px;">
-                            <i class="bi bi-mic-fill fs-3"></i>
+                        <button type="button" class="btn btn-violet rounded-circle p-3 d-flex align-items-center justify-content-center" id="btn-record-start" style="width: 60px; height: 60px; box-shadow: 0 0 15px var(--primary-glow);">
+                            <i class="bi bi-mic-fill fs-4"></i>
                         </button>
-                        <button type="button" class="btn btn-danger rounded-circle p-3 d-none" id="btn-record-stop" style="width: 70px; height: 70px;">
-                            <i class="bi bi-stop-fill fs-3"></i>
+                        <button type="button" class="btn btn-danger rounded-circle p-3 d-none d-flex align-items-center justify-content-center" id="btn-record-stop" style="width: 60px; height: 60px; box-shadow: 0 0 15px rgba(239,68,68,0.4);">
+                            <i class="bi bi-stop-fill fs-4"></i>
                         </button>
                     </div>
                     
-                    <audio id="audio-preview" controls class="d-none mt-3 w-70 mx-auto"></audio>
+                    <audio id="audio-preview" controls class="d-none mt-3 w-75 mx-auto"></audio>
                 </div>
             </div>
 
@@ -126,7 +149,7 @@
             <div class="border-top border-color pt-3 mt-3 d-flex justify-content-between align-items-center">
                 <div>
                     <button type="button" class="btn btn-secondary-custom" id="btn-pause">
-                        <i class="bi bi-pause-fill"></i> Pause
+                        <i class="bi bi-pause-fill"></i> Pause Session
                     </button>
                     <button type="button" class="btn btn-secondary-custom ms-2" id="btn-fullscreen">
                         <i class="bi bi-fullscreen"></i> Fullscreen
@@ -143,12 +166,136 @@
     </div>
 </div>
 
+<!-- Webcam Preview Card (Video Interview Mode) -->
+<div class="row justify-content-start position-relative mt-1 mb-4" style="z-index: 5;">
+    <div class="col-lg-5" data-aos="fade-up" data-aos-delay="100">
+        <div class="glass-card p-3 text-center" id="webcam-card" data-tilt data-tilt-max="5">
+            <div class="fw-bold text-white small mb-2 text-start"><i class="bi bi-camera-video text-primary"></i> Candidate Webcam feed:</div>
+            <div class="position-relative overflow-hidden rounded bg-black" style="height: 145px; border: 1px solid var(--border-color);">
+                <video id="webcam-preview" autoplay muted class="w-100 h-100 object-fit-cover"></video>
+                <div class="position-absolute bottom-0 start-0 w-100 p-2 d-flex justify-content-between align-items-center" style="background: rgba(3,7,18,0.7); backdrop-filter: blur(4px);">
+                    <span id="face-overlay" class="text-white small" style="font-size: 10px;">Camera feed loading...</span>
+                    <span class="badge bg-success" style="font-size: 9px;" id="attention-badge">Attention: 98%</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Hidden tracking elements -->
 <input type="hidden" id="current-question-index" value="{{ session.current_question_index }}">
 <input type="hidden" id="current-question-id" value="{{ questions[session.current_question_index].id }}">
 {% endblock %}
 
 {% block scripts %}
+<!-- Include Three.js Hologram loop -->
+<script>
+    let hologramMesh, hologramMaterial, hologramScene, hologramCamera, hologramRenderer;
+    let hologramState = 'idle'; // idle, listening, thinking, speaking, evaluating
+
+    window.setHologramState = (state) => {
+        hologramState = state;
+    };
+
+    function initHologram() {
+        const canvas = document.getElementById('avatar-canvas');
+        if (!canvas) return;
+
+        const width = canvas.clientWidth;
+        const height = canvas.clientHeight;
+
+        hologramScene = new THREE.Scene();
+        hologramCamera = new THREE.PerspectiveCamera(45, width / height, 1, 100);
+        hologramCamera.position.z = 24;
+
+        hologramRenderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
+        hologramRenderer.setSize(width, height);
+        hologramRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+        // Generate glowing sphere of floating particles
+        const geometry = new THREE.SphereGeometry(6.5, 24, 24);
+        
+        // Custom canvas particle texture (glowing dots)
+        const pCanvas = document.createElement('canvas');
+        pCanvas.width = 16;
+        pCanvas.height = 16;
+        const pCtx = pCanvas.getContext('2d');
+        const grad = pCtx.createRadialGradient(8, 8, 0, 8, 8, 8);
+        grad.addColorStop(0, 'rgba(255, 255, 255, 1)');
+        grad.addColorStop(0.4, 'rgba(139, 92, 246, 0.8)');
+        grad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+        pCtx.fillStyle = grad;
+        pCtx.fillRect(0, 0, 16, 16);
+        const texture = new THREE.CanvasTexture(pCanvas);
+
+        hologramMaterial = new THREE.PointsMaterial({
+            color: 0x8b5cf6, // Violet
+            size: 0.22,
+            map: texture,
+            transparent: true,
+            blending: THREE.AdditiveBlending,
+            depthWrite: false
+        });
+
+        hologramMesh = new THREE.Points(geometry, hologramMaterial);
+        hologramScene.add(hologramMesh);
+
+        // Holographic cyber rings
+        const ringGeo = new THREE.RingGeometry(8.2, 8.6, 32);
+        const ringMat = new THREE.MeshBasicMaterial({ color: 0x00d4ff, side: THREE.DoubleSide, transparent: true, opacity: 0.12 });
+        const ring = new THREE.Mesh(ringGeo, ringMat);
+        ring.rotation.x = Math.PI / 2.3;
+        hologramScene.add(ring);
+
+        function animateHologram() {
+            requestAnimationFrame(animateHologram);
+
+            const time = Date.now() * 0.002;
+
+            // Mutate visual parameters based on active states
+            switch (hologramState) {
+                case 'idle':
+                    hologramMaterial.color.setHex(0x8b5cf6); // Violet
+                    hologramMesh.rotation.y += 0.006;
+                    hologramMesh.rotation.x += 0.002;
+                    hologramMesh.scale.setScalar(1 + Math.sin(time) * 0.04);
+                    break;
+                case 'listening':
+                    hologramMaterial.color.setHex(0x10b981); // Green
+                    hologramMesh.rotation.y += 0.01;
+                    hologramMesh.scale.setScalar(1 + Math.sin(time * 2.5) * 0.07);
+                    break;
+                case 'thinking':
+                    hologramMaterial.color.setHex(0xf59e0b); // Amber
+                    hologramMesh.rotation.y -= 0.016;
+                    hologramMesh.rotation.x += 0.008;
+                    hologramMesh.scale.setScalar(1 + Math.sin(time * 6) * 0.09);
+                    break;
+                case 'evaluating':
+                    hologramMaterial.color.setHex(0x00d4ff); // Cyan
+                    hologramMesh.rotation.y += 0.003;
+                    hologramMesh.scale.setScalar(1 + Math.cos(time * 3.5) * 0.05);
+                    break;
+            }
+
+            hologramRenderer.render(hologramScene, hologramCamera);
+        }
+
+        animateHologram();
+
+        // Handle resizing bounds
+        window.addEventListener('resize', () => {
+            const w = canvas.clientWidth;
+            const h = canvas.clientHeight;
+            hologramCamera.aspect = w / h;
+            hologramCamera.updateProjectionMatrix();
+            hologramRenderer.setSize(w, h);
+        });
+    }
+
+    // Initialize 3D loop after DOM loads
+    document.addEventListener('DOMContentLoaded', initHologram);
+</script>
 <!-- Include room orchestration script -->
 <script src="{{ url_for('static', filename='js/interview.js') }}"></script>
 {% endblock %}
