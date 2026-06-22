@@ -12,7 +12,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <!-- Custom Style Sheet -->
-    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/style.css') }}?v=1.0.3" rel="stylesheet">
     <!-- AOS CSS -->
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     <!-- Chart.js -->
@@ -41,7 +41,7 @@
 
     <!-- Navigation Bar -->
     <nav class="navbar navbar-expand-lg navbar-dark glass-nav">
-        <div class="container">
+        <div class="container-fluid px-4 px-md-5">
             <a class="navbar-brand d-flex align-items-center" href="{{ url_for('landing') }}">
                 <i class="bi bi-cpu text-info me-2 fs-4"></i>
                 <span style="font-family: 'Outfit', sans-serif; font-weight: 800; letter-spacing: 0.5px;">Interview<span class="text-info">AI</span></span>
@@ -83,7 +83,7 @@
     </nav>
 
     <!-- Main Container -->
-    <div class="container py-4">
+    <div class="container-fluid px-4 px-md-5 py-4">
         <!-- Flash Messages via SweetAlert2 Toasts -->
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}

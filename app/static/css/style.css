@@ -5,10 +5,10 @@
 :root {
     --bg-color: #030712; /* Ultra Dark background */
     --bg-gradient: radial-gradient(circle at 50% 50%, #111827 0%, #030712 100%);
-    --surface-color: rgba(17, 24, 39, 0.35); /* Soft transparent glass */
-    --surface-hover: rgba(31, 41, 55, 0.55);
-    --border-color: rgba(255, 255, 255, 0.06);
-    --border-active: rgba(139, 92, 246, 0.35); /* Violet glow border */
+    --surface-color: rgba(17, 24, 39, 0.7); /* Thicker glass to hide grid lines behind text */
+    --surface-hover: rgba(31, 41, 55, 0.85);
+    --border-color: rgba(255, 255, 255, 0.08);
+    --border-active: rgba(139, 92, 246, 0.4); /* Violet glow border */
     
     --primary: #8b5cf6; /* Violet */
     --primary-glow: rgba(139, 92, 246, 0.45);
@@ -17,8 +17,8 @@
     --accent-glow: rgba(0, 212, 255, 0.4);
     
     --text-high: #ffffff;
-    --text-med: #9ca3af;
-    --text-low: #6b7280;
+    --text-med: #e2e8f0;   /* Bright slate gray (slate-200) for excellent legibility */
+    --text-low: #94a3b8;   /* Medium slate gray (slate-400) for clear secondary text */
     
     --success: #10b981;
     --danger: #ef4444;
